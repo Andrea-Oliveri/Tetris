@@ -18,7 +18,20 @@ class Graphics:
         pygame.display.set_caption("Tetris")
         
     
-    def draw_grid(self, current_grid):
+    
+    def draw_all(self, current_grid, current_tetromino, queue, hold, score, level, goal):
+        self._draw_current_grid(current_grid)
+        self._draw_current_tetromino(current_tetromino)
+        self._draw_borders()
+    
+        pygame.display.update()
+    
+    
+    
+    
+    
+    
+    def _draw_current_grid(self, current_grid):
         """Draws the whole grid on the screen."""
         self._screen.fill(COLORS["background"])
         
@@ -31,7 +44,7 @@ class Graphics:
                                       GRID_SQUARE_SIZE_PIXELS, GRID_SQUARE_SIZE_PIXELS))
                 
 
-    def draw_current_tetromino(self, tetromino):
+    def _draw_current_tetromino(self, tetromino):
         """Draws the current tetromino on the screen."""
         
         for line in range(tetromino.MAPS_SIZE["height"]):
@@ -46,14 +59,14 @@ class Graphics:
                                           GRID_SQUARE_SIZE_PIXELS, GRID_SQUARE_SIZE_PIXELS))
     
 
-    # Can be made faster: draw the colors first, then the external rectangle and the internal grid using pygame.draw.lines (less redundancy in drawing lines: gain approx 0.3 ms per redraw)
-    def draw_borders(self):
+    def _draw_borders(self):
         """Draws the borders between cases in the grid and around the grid."""
-        for line in range(grid.VISIBLE_SIZE["height"]):
-            for col in range(grid.VISIBLE_SIZE["width"]):
-                pygame.draw.rect(self._screen, COLORS["grid_line"], (GRID_POSITION_PIXELS[0]+col*GRID_SQUARE_SIZE_PIXELS, GRID_POSITION_PIXELS[1]+line*GRID_SQUARE_SIZE_PIXELS, GRID_SQUARE_SIZE_PIXELS, GRID_SQUARE_SIZE_PIXELS), GRID_INTERNAL_LINE_WIDTH_PIXELS)
-    
-        pygame.draw.rect(self._screen, COLORS["grid_line"], (*GRID_POSITION_PIXELS, GRID_SIZE_PIXELS["width"], GRID_SIZE_PIXELS["height"]), GRID_EXTERNAL_LINE_WIDTH_PIXELS)
+        for line in range(1, grid.VISIBLE_SIZE["height"]):
+            pygame.draw.line(self._screen, COLORS["grid_line"], (GRID_POSITION_PIXELS[0], GRID_POSITION_PIXELS[1]+line*GRID_SQUARE_SIZE_PIXELS), (GRID_POSITION_PIXELS[0]+GRID_SIZE_PIXELS["width"], GRID_POSITION_PIXELS[1]+line*GRID_SQUARE_SIZE_PIXELS), GRID_INTERNAL_LINE_WIDTH_PIXELS)
 
+        for col in range(1, grid.VISIBLE_SIZE["width"]):
+            pygame.draw.line(self._screen, COLORS["grid_line"], (GRID_POSITION_PIXELS[0]+col*GRID_SQUARE_SIZE_PIXELS, GRID_POSITION_PIXELS[1]), (GRID_POSITION_PIXELS[0]+col*GRID_SQUARE_SIZE_PIXELS, GRID_POSITION_PIXELS[0]+GRID_SIZE_PIXELS["height"]), GRID_INTERNAL_LINE_WIDTH_PIXELS)
+
+        pygame.draw.rect(self._screen, COLORS["grid_line"], (*GRID_POSITION_PIXELS, GRID_SIZE_PIXELS["width"], GRID_SIZE_PIXELS["height"]), GRID_EXTERNAL_LINE_WIDTH_PIXELS)
 
 

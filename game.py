@@ -22,15 +22,15 @@ class Game:
 
     def __init__(self):
         """Constructor for the class Game."""
-        self._update_period = 250
+        self._update_period = 200
         
         self._grid = Grid()
         self._graphics = Graphics()
         self._random = RandomBag()
         
-        self._preview = None
+        self._next_queue = None
         self._current_tetromino = None
-        self._update_preview_and_current_tetromino()
+        self._update_queue_and_current_tetromino()
         
         pygame.init()
         pygame.time.set_timer(UPDATE_EVENT, self._update_period)
@@ -41,11 +41,9 @@ class Game:
         pygame.quit()
         
     
-    def _update_preview_and_current_tetromino(self):
-        next_pieces = self._random.next_pieces()
-        self._preview = next_pieces[1:]
+    def _update_queue_and_current_tetromino(self):
+        current_piece, self._next_queue = self._random.next_pieces()
         
-        current_piece = next_pieces[0]
         if current_piece == "I":
             self._current_tetromino = I_Tetromino()
         elif current_piece == "O":
@@ -74,10 +72,7 @@ class Game:
                 if event.type == UPDATE_EVENT:
                     self._current_tetromino.move("down", self._grid)
                     if self._current_tetromino.position[0] < 0:
-                        self._update_preview_and_current_tetromino()
+                        self._update_queue_and_current_tetromino()
                         
-            self._graphics.draw_grid(self._grid)
-            self._graphics.draw_current_tetromino(self._current_tetromino)
-            self._graphics.draw_borders()
+            self._graphics.draw_all(self._grid, self._current_tetromino, self._next_queue, None, None, None, None)
 
-            pygame.display.update()

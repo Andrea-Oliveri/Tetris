@@ -13,11 +13,11 @@ class RandomBag:
         self._list = []
         
     def next_pieces(self):
-        """Returns the next PREVIEW_LENGTH pieces and, if needed, draws another bag."""
-        if len(self._list) < PREVIEW_LENGTH:
+        """Returns the current and next PREVIEW_LENGTH pieces and, if needed, draws another bag."""
+        if len(self._list) <= PREVIEW_LENGTH:
             self._list += random.sample(TETROMINOS_LIST, len(TETROMINOS_LIST))
-            
-        previews = self._list[:PREVIEW_LENGTH]
+        
+        current = self._list[0]
         self._list = self._list[1:]
         
-        return previews
+        return current, self._list[:PREVIEW_LENGTH]
