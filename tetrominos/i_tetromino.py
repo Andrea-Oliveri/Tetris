@@ -6,7 +6,7 @@ class I_Tetromino(Tetromino):
     """Class I_Tetromino. Class inheriting from abstract class Tetromino representing
     the I tetromino."""
     
-    def __init__(self, position, rotation):
+    def __init__(self):
         """Constructor for the class I_Tetromino."""
         maps = {"DEG_0"  : [[0,0,0,0],
                             [1,1,1,1],
@@ -28,12 +28,9 @@ class I_Tetromino(Tetromino):
                             [0,1,0,0],
                             [0,1,0,0]] }
         
-        Tetromino.__init__(self, position, rotation, maps)
+        Tetromino.__init__(self, maps, "I")
 
     def rotate(self, direction, grid):
         """Implementation of the rotate method for the I_Tetromino."""
-        raise NotImplmentedError
+        raise NotImplementedError
     
-    def move(self, direction, grid):
-        """Implementation of the move method for the I_Tetromino."""
-        raise NotImplmentedError
