@@ -5,7 +5,7 @@ from pygame.locals import QUIT
 
 from constants.game import *
 from grid import Grid
-from graphics import Graphics
+from graphics.graphics import Window
 from random_bag import RandomBag
 from tetrominos.i_tetromino import I_Tetromino
 from tetrominos.j_tetromino import J_Tetromino
@@ -25,7 +25,7 @@ class Game:
         self._update_period = 200
         
         self._grid = Grid()
-        self._graphics = Graphics()
+        self._window = Window()
         self._random = RandomBag()
         
         self._next_queue = None
@@ -74,5 +74,5 @@ class Game:
                     if self._current_tetromino.position[0] < 0:
                         self._update_queue_and_current_tetromino()
                         
-            self._graphics.draw_all(self._grid, self._current_tetromino, self._next_queue, None, None, None, None)
+            self._window.draw_all(self._grid, self._current_tetromino, self._next_queue, "O", None, None, None)
 
