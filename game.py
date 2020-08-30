@@ -64,5 +64,8 @@ class Game:
                     if self._current_tetromino.position[0] < 0:
                         self._spawn_tetromino()
                         
-            self._window.draw_all(self._grid, self._current_tetromino, self._next_queue, self._held_tetromino, None, None, None)
+            self._window.update(current_grid=self._grid,
+                                current_tetromino=self._current_tetromino,
+                                queue=self._next_queue, held=self._held_tetromino,
+                                score=None, level=None, goal=None)
 

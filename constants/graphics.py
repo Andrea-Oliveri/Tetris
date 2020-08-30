@@ -1,24 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from constants import grid
-
 # Constants defining the sizes in pixels of several graphical elements. 
+WINDOW_SIZE = (540,600)
 HOLD_SQUARE_SIZE_PIXELS = 20
 GRID_SQUARE_SIZE_PIXELS = 30
 QUEUE_SQUARE_SIZE_PIXELS = HOLD_SQUARE_SIZE_PIXELS
-
-HOLD_SIZE_PIXELS = {"width": 130, "height": 100}
-GRID_SIZE_PIXELS = {"width": grid.VISIBLE_SIZE["width"]*GRID_SQUARE_SIZE_PIXELS,
-                    "height": grid.VISIBLE_SIZE["height"]*GRID_SQUARE_SIZE_PIXELS}
-QUEUE_SIZE_PIXELS = {"width": 7*HOLD_SQUARE_SIZE_PIXELS,
-                    "height": 3*6*HOLD_SQUARE_SIZE_PIXELS}
-
-
-
-# Constants defining the positions in pixels of several graphical elements. 
-HOLD_POSITION_PIXELS = (0, 0)
-GRID_POSITION_PIXELS = (HOLD_SIZE_PIXELS["width"], 0)
-QUEUE_POSITION_PIXELS = (HOLD_SIZE_PIXELS["width"]+GRID_SIZE_PIXELS["width"], 0)
+ELEMENTS_MARGIN_PIXELS = 8
 
 # Constants defining the width in pixels of several graphical elements.
 GRID_EXTERNAL_LINE_WIDTH_PIXELS = 3
