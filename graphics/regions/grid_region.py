@@ -4,7 +4,7 @@ import pygame
 
 from constants.graphics import COLORS, GRID_SQUARE_SIZE_PIXELS, GRID_INTERNAL_LINE_WIDTH_PIXELS, GRID_EXTERNAL_LINE_WIDTH_PIXELS
 from constants import grid
-from graphics.region import Region
+from graphics.regions.region import Region
 
 
 class GridRegion(Region):
@@ -18,11 +18,9 @@ class GridRegion(Region):
     
     def update(self, **kwargs):
         """Implementation of the update method for the HoldRegion."""
-        if len(kwargs.keys()) != 2 or "current_grid" not in kwargs or "current_tetromino" not in kwargs:
-            raise TypeError("GridRegion.update() takes exactly two kwarg: current_grid and current_tetromino")
-            
+        self._update_kwargs_test(kwargs, ["current_grid", "current_tetromino"])
+        
         self._surface.fill(COLORS["background"])
-
         self._draw_current_grid(kwargs["current_grid"])
         self._draw_current_tetromino(kwargs["current_tetromino"])
         self._draw_borders()

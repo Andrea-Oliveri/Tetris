@@ -3,7 +3,7 @@
 import pygame
 
 from constants.graphics import COLORS, HOLD_SQUARE_SIZE_PIXELS, HOLD_FONT_SIZE
-from graphics.region import Region
+from graphics.regions.region import Region
 from graphics import utils
 
 

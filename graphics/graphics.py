@@ -4,10 +4,10 @@ import pygame
 
 from constants.graphics import WINDOW_SIZE, COLORS
 from graphics import utils
-from graphics.region import Region
-from graphics.hold_region import HoldRegion
-from graphics.grid_region import GridRegion
-from graphics.queue_region import QueueRegion
+from graphics.regions.region import Region
+from graphics.regions.hold_region import HoldRegion
+from graphics.regions.grid_region import GridRegion
+from graphics.regions.queue_region import QueueRegion
 
 
 class Window(Region):
@@ -26,9 +26,8 @@ class Window(Region):
 
     def update(self, **kwargs):
         """Implementation of the update method for the Window."""
-        if len(kwargs.keys()) != 7 or not all([key in kwargs for key in ["current_grid", "current_tetromino", "queue", "held", "score", "level", "goal"]]):
-            raise TypeError("Window.update() takes exactly 7 kwarg: current_grid, current_tetromino, queue, held, score, level, goal")
-            
+        self._update_kwargs_test(kwargs, ["current_grid", "current_tetromino", "queue", "held", "score", "level", "goal"])
+        
         current_grid = kwargs["current_grid"]
         current_tetromino = kwargs["current_tetromino"]
         queue = kwargs["queue"]
@@ -42,7 +41,6 @@ class Window(Region):
         self._queue_region.update(queue=queue)
 
         self._surface = utils.merge_surfaces_horizontally([self._hold_region.surface, self._grid_region.surface, self._queue_region.surface])
-        #self._screen.set_mode(self._surface.get_size())
         self._screen.fill(COLORS["background"])
         self._screen.blit(self._surface, ((self._screen.get_width()-self._surface.get_width())/2,
                                           (self._screen.get_height()-self._surface.get_height())/2))

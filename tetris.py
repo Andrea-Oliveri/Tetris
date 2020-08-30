@@ -5,10 +5,8 @@
 
 
 # TODO:
-#    As of now, tetrominos lock instantly into place when can't descend anymore. There should be 0.5 sec delay after lock, reset if piece manages to move down a row
-#    Hold piece limitation: can only swap once before piece settles
-#    3 next pieces preview
-#    ....... add tetris guidelines
+#    Complete graphics: put variables in Game: score, level, goal even if unused and finish graphical layout
+#    Start implementing actual gameplay, starting from methods of tetrominos
 
 #   right-left arrows: move, Up arrow: Rotating 90 degrees clockwise, Down arrow key: Non-locking soft drop, Space bar: Locking hard drop, C key / Shift key: Hold piece, Z key: Rotating 90 degrees counterclockwise
 

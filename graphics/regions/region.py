@@ -15,6 +15,11 @@ class Region(ABC):
         """Redraws the surface when called."""
         pass
     
+    def _update_kwargs_test(self, kwargs, keys_list):
+        """Tests if kwargs contains all keys in keys_list and no more."""
+        if len(kwargs.keys()) != len(keys_list) or not all([key in kwargs for key in keys_list]):
+            raise TypeError("{}.update() takes exactly {} kwarg: {}".format(self.__class__.__name__, len(keys_list), ", ".join(keys_list)))
+    
     def _get_surface(self):
         """Special function that allows to get the attribute _surface from the exterior."""
         return self._surface
