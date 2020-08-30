@@ -27,18 +27,19 @@ class GridRegion(Region):
                 
     
     def _draw_current_grid(self, current_grid):
-        """Draws the whole grid on the screen."""
+        """Draws the whole grid on the screen. Must account for different
+        coordinate systems used by pygame and grid."""        
         for line in range(grid.VISIBLE_SIZE["height"]):
             for col in range(grid.VISIBLE_SIZE["width"]):
-                if current_grid[line, col] != " ":
+                if not current_grid.is_empty([line, col]):
                     pygame.draw.rect(self._surface, COLORS[current_grid[line, col]],
-                                     (col*GRID_SQUARE_SIZE_PIXELS, line*GRID_SQUARE_SIZE_PIXELS,
+                                     (col*GRID_SQUARE_SIZE_PIXELS,
+                                      (grid.VISIBLE_SIZE["height"]-1-line)*GRID_SQUARE_SIZE_PIXELS,
                                       GRID_SQUARE_SIZE_PIXELS, GRID_SQUARE_SIZE_PIXELS))
                 
 
     def _draw_current_tetromino(self, tetromino):
         """Draws the current tetromino on the grid."""
-        
         for line in range(tetromino.MAPS_SIZE["height"]):
             for col in range(tetromino.MAPS_SIZE["width"]):
                 if tetromino[line, col]:

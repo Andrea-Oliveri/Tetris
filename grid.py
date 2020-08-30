@@ -14,12 +14,8 @@ class Grid:
     def __getitem__(self, indeces):
         """Special function that allows to get items of attribute _grid from the exterior."""
         return self._grid[indeces[0]][indeces[1]]
-     
-
-    ######### JUST FOR DEBUG
-    def __repr__(self):
-        return "\n".join([",".join(line) for line in self._grid[::-1]])
-
-
-
     
+    def is_empty(self, indeces):
+        """Function that returns True if the case described by indeces parameter is empty,
+        False otherwise."""
+        return self._grid[indeces[0]][indeces[1]] == " "

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import pygame
-from pygame.locals import QUIT, KEYDOWN, K_c
+from pygame.locals import QUIT, KEYDOWN, K_c, K_LEFT, K_RIGHT, K_UP, K_DOWN
 
-from constants.game import *
+from constants.game import UPDATE_EVENT
 from grid import Grid
 from graphics.graphics import Window
 from random_bag import RandomBag
@@ -61,11 +61,15 @@ class Game:
                             self._spawn_tetromino()
                         else:
                             self._current_tetromino = Tetromino(old_held)
-                            
+                    elif event.key == K_LEFT:
+                        self._current_tetromino.move("left", self._grid)
+                    elif event.key == K_RIGHT:
+                        self._current_tetromino.move("right", self._grid)
+                    elif event.key == K_UP:
+                        self._spawn_tetromino()
+                        
                 if event.type == UPDATE_EVENT:
                     self._current_tetromino.move("down", self._grid)
-                    if self._current_tetromino.position[0] < 0:
-                        self._spawn_tetromino()
                         
             self._window.update(current_grid=self._grid,
                                 current_tetromino=self._current_tetromino,

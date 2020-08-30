@@ -46,6 +46,18 @@ class Tetromino:
     only be get from the exteriour, not set nor deleted."""
     letter = property(_get_letter)
     
+    def collision(self, position, current_grid):
+        """Returns True if moving the tetromino to the position passed as parameter
+        resulted in a collision, False otherwise."""
+        for line in range(self.MAPS_SIZE["height"]):
+            for col in range(self.MAPS_SIZE["width"]):
+                grid_line = position[0]-line-1
+                grid_col = position[1]+col
+                if self[line, col]:
+                    if grid_line < 0 or grid_col < 0 or grid_col >= grid.SIZE["width"] or not current_grid.is_empty([grid_line, grid_col]):
+                        return True                
+        return False
+
     def rotate(self, direction, grid):
         """Rotates the tetromino in the desired direction ("clockwise" or "anticlockwise")."""
         raise NotImplementedError
@@ -53,4 +65,17 @@ class Tetromino:
     def move(self, direction, grid):
         """Moves the tetromino in the desired direction ("left" or "right" or "down").
         Returns True if the tetromino was moved and False if collisions did not allow it."""
-        self._position[0]-=1
+        new_position = self.position
+        if direction == "left":
+            new_position[1] -= 1
+        elif direction == "right":
+            new_position[1] += 1
+        elif direction == "down":
+            new_position[0] -= 1
+        
+        if not self.collision(new_position, grid):
+            self._position = new_position
+            return True
+        
+        return False
+        
