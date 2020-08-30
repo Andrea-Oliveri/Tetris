@@ -25,6 +25,9 @@ class Game:
         self._next_queue = None
         self._current_tetromino = None
         self._spawn_tetromino()
+        self._score = 0
+        self._level = 1
+        self._goal = 5*self._level
         
         pygame.init()
         pygame.time.set_timer(UPDATE_EVENT, self._update_period)
@@ -67,5 +70,5 @@ class Game:
             self._window.update(current_grid=self._grid,
                                 current_tetromino=self._current_tetromino,
                                 queue=self._next_queue, held=self._held_tetromino,
-                                score=None, level=None, goal=None)
+                                score=self._score, level=self._level, goal=self._goal)
 

@@ -2,7 +2,7 @@
 
 import random
 
-from constants.random_bag import *
+from constants.random_bag import QUEUE_LENGTH, TETROMINOS_LIST
 
 
 class RandomBag:

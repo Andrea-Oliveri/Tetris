@@ -3,7 +3,7 @@
 from math import floor
 
 from constants import grid
-from constants.tetromino import *
+from constants.tetromino import MAPS
 
 
 class Tetromino:

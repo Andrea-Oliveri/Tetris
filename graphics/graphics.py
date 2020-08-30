@@ -8,6 +8,8 @@ from graphics.regions.region import Region
 from graphics.regions.hold_region import HoldRegion
 from graphics.regions.grid_region import GridRegion
 from graphics.regions.queue_region import QueueRegion
+from graphics.regions.level_region import LevelRegion
+from graphics.regions.score_region import ScoreRegion
 
 
 class Window(Region):
@@ -21,6 +23,8 @@ class Window(Region):
         self._hold_region = HoldRegion()
         self._grid_region = GridRegion()
         self._queue_region = QueueRegion()
+        self._level_region = LevelRegion()
+        self._score_region = ScoreRegion()
         
         Region.__init__(self)
 
@@ -28,22 +32,19 @@ class Window(Region):
         """Implementation of the update method for the Window."""
         self._update_kwargs_test(kwargs, ["current_grid", "current_tetromino", "queue", "held", "score", "level", "goal"])
         
-        current_grid = kwargs["current_grid"]
-        current_tetromino = kwargs["current_tetromino"]
-        queue = kwargs["queue"]
-        held = kwargs["held"]
-        score = kwargs["score"]
-        level = kwargs["level"]
-        goal = kwargs["goal"]
+        self._hold_region.update(held=kwargs["held"])
+        self._grid_region.update(current_grid=kwargs["current_grid"], current_tetromino=kwargs["current_tetromino"])
+        self._queue_region.update(queue=kwargs["queue"])
+        self._level_region.update(level=kwargs["level"], goal=kwargs["goal"])
+        self._score_region.update(score=kwargs["score"])
 
-        self._hold_region.update(held=held)
-        self._grid_region.update(current_grid=current_grid, current_tetromino=current_tetromino)
-        self._queue_region.update(queue=queue)
-
-        self._surface = utils.merge_surfaces_horizontally([self._hold_region.surface, self._grid_region.surface, self._queue_region.surface])
+        central_column = utils.merge_surfaces_vertically([self._grid_region.surface, self._score_region.surface])
+        right_column = utils.merge_surfaces_vertically([self._queue_region.surface, self._level_region.surface], False)
+        
+        self._surface = utils.merge_surfaces_horizontally([self._hold_region.surface, central_column, right_column])
         self._screen.fill(COLORS["background"])
         self._screen.blit(self._surface, ((self._screen.get_width()-self._surface.get_width())/2,
-                                          (self._screen.get_height()-self._surface.get_height())/2))
+                                          (self._screen.get_height()-self._surface.get_height())/2))        
         pygame.display.update()
     
     

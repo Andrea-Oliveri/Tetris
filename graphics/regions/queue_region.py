@@ -27,4 +27,4 @@ class QueueRegion(Region):
     
         text = utils.draw_text("Next Pieces", QUEUE_FONT_SIZE)
         pieces = [utils.draw_outside_tetromino(piece, QUEUE_SQUARE_SIZE_PIXELS) for piece in queue]
-        self._surface = utils.merge_surfaces_vertically([text, *pieces])
+        self._surface = utils.merge_surfaces_vertically([text, *pieces], total_height=15*QUEUE_SQUARE_SIZE_PIXELS)
