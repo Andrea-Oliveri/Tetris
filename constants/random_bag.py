@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from constants.tetromino import MAPS
+
 # Constant defined as the number of pieces visible in the preview
-PREVIEW_LENGTH = 3
+QUEUE_LENGTH = 3
 
 # Constant defined as the list of letters representing all Tetrominos
-TETROMINOS_LIST = ["I", "O", "T", "S", "Z", "J", "L"]
+TETROMINOS_LIST = MAPS.keys()

@@ -1,20 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import pygame
-from pygame.locals import QUIT
+from pygame.locals import QUIT, KEYDOWN, K_c
 
 from constants.game import *
 from grid import Grid
 from graphics.graphics import Window
 from random_bag import RandomBag
-from tetrominos.i_tetromino import I_Tetromino
-from tetrominos.j_tetromino import J_Tetromino
-from tetrominos.l_tetromino import L_Tetromino
-from tetrominos.o_tetromino import O_Tetromino
-from tetrominos.s_tetromino import S_Tetromino
-from tetrominos.t_tetromino import T_Tetromino
-from tetrominos.z_tetromino import Z_Tetromino
-
+from tetromino import Tetromino
 
 
 class Game:
@@ -28,9 +21,10 @@ class Game:
         self._window = Window()
         self._random = RandomBag()
         
+        self._held_tetromino = None
         self._next_queue = None
         self._current_tetromino = None
-        self._update_queue_and_current_tetromino()
+        self._spawn_tetromino()
         
         pygame.init()
         pygame.time.set_timer(UPDATE_EVENT, self._update_period)
@@ -41,25 +35,11 @@ class Game:
         pygame.quit()
         
     
-    def _update_queue_and_current_tetromino(self):
+    def _spawn_tetromino(self):
+        """Gets the next tetromino to be spawned from the random generator,
+        spawns it and updates the queue."""
         current_piece, self._next_queue = self._random.next_pieces()
-        
-        if current_piece == "I":
-            self._current_tetromino = I_Tetromino()
-        elif current_piece == "O":
-            self._current_tetromino = O_Tetromino()
-        elif current_piece == "T":
-            self._current_tetromino = T_Tetromino()        
-        elif current_piece == "S":
-            self._current_tetromino = S_Tetromino()
-        elif current_piece == "Z":
-            self._current_tetromino = Z_Tetromino()
-        elif current_piece == "J":
-            self._current_tetromino = J_Tetromino()            
-        elif current_piece == "L":
-            self._current_tetromino = L_Tetromino()      
-        else:
-            raise TypeError(current_piece + " not in [I, O, T, S, Z, J, L]")
+        self._current_tetromino = Tetromino(current_piece)
 
             
     def run(self):
@@ -69,10 +49,20 @@ class Game:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     running = False
+                if event.type == KEYDOWN:
+                    if event.key == K_c:
+                        old_held = self._held_tetromino
+                        self._held_tetromino = self._current_tetromino.letter
+
+                        if old_held == None:
+                            self._spawn_tetromino()
+                        else:
+                            self._current_tetromino = Tetromino(old_held)
+                            
                 if event.type == UPDATE_EVENT:
                     self._current_tetromino.move("down", self._grid)
                     if self._current_tetromino.position[0] < 0:
-                        self._update_queue_and_current_tetromino()
+                        self._spawn_tetromino()
                         
-            self._window.draw_all(self._grid, self._current_tetromino, self._next_queue, "O", None, None, None)
+            self._window.draw_all(self._grid, self._current_tetromino, self._next_queue, self._held_tetromino, None, None, None)
 

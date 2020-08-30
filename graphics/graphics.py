@@ -6,6 +6,7 @@ from constants.graphics import *
 from constants import grid
 from graphics.hold_region import HoldRegion
 from graphics.grid_region import GridRegion
+from graphics.queue_region import QueueRegion
 
 
 class Window:
@@ -21,7 +22,8 @@ class Window:
         
         self._hold_region = HoldRegion(HOLD_SIZE_PIXELS)
         self._grid_region = GridRegion(GRID_SIZE_PIXELS)
-    
+        self._queue_region = QueueRegion(QUEUE_SIZE_PIXELS)
+
     
     def draw_all(self, current_grid, current_tetromino, queue, held, score, level, goal):
         """Redraws the whole window when called."""
@@ -29,10 +31,12 @@ class Window:
         
         self._hold_region.update(held=held)
         self._grid_region.update(current_grid=current_grid, current_tetromino=current_tetromino)
-        
+        self._queue_region.update(queue=queue)
+
         self._screen.blit(self._hold_region.surface, HOLD_POSITION_PIXELS)
         self._screen.blit(self._grid_region.surface, GRID_POSITION_PIXELS)
-    
+        self._screen.blit(self._queue_region.surface, QUEUE_POSITION_PIXELS)
+
         pygame.display.update()
     
     

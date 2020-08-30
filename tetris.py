@@ -6,7 +6,7 @@
 
 # TODO:
 #    As of now, tetrominos lock instantly into place when can't descend anymore. There should be 0.5 sec delay after lock, reset if piece manages to move down a row
-#    Hold piece
+#    Hold piece limitation: can only swap once before piece settles
 #    3 next pieces preview
 #    ....... add tetris guidelines
 

@@ -7,11 +7,10 @@ HOLD_SQUARE_SIZE_PIXELS = 20
 GRID_SQUARE_SIZE_PIXELS = 30
 QUEUE_SQUARE_SIZE_PIXELS = HOLD_SQUARE_SIZE_PIXELS
 
-HOLD_SIZE_PIXELS = {"width": 6*HOLD_SQUARE_SIZE_PIXELS,
-                    "height": 6*HOLD_SQUARE_SIZE_PIXELS}
+HOLD_SIZE_PIXELS = {"width": 130, "height": 100}
 GRID_SIZE_PIXELS = {"width": grid.VISIBLE_SIZE["width"]*GRID_SQUARE_SIZE_PIXELS,
                     "height": grid.VISIBLE_SIZE["height"]*GRID_SQUARE_SIZE_PIXELS}
-QUEUE_SIZE_PIXELS = {"width": 6*HOLD_SQUARE_SIZE_PIXELS,
+QUEUE_SIZE_PIXELS = {"width": 7*HOLD_SQUARE_SIZE_PIXELS,
                     "height": 3*6*HOLD_SQUARE_SIZE_PIXELS}
 
 
@@ -25,7 +24,14 @@ QUEUE_POSITION_PIXELS = (HOLD_SIZE_PIXELS["width"]+GRID_SIZE_PIXELS["width"], 0)
 GRID_EXTERNAL_LINE_WIDTH_PIXELS = 3
 GRID_INTERNAL_LINE_WIDTH_PIXELS = 1
 
-# Constants storing colors of several graphical elements.
-COLORS = {"background": (230, 230, 230), "grid_line": (30, 30, 30),
+# Constant storing colors of several graphical elements.
+COLORS = {"background": (230, 230, 230), "grid_line": (50, 50, 50), "text": (30, 30, 30),
           "I": (0, 240, 240), "O": (240, 240, 0), "T": (160, 0, 240),
           "S": (0, 240, 0), "Z": (240, 0, 0), "J": (0, 0, 240), "L": (240, 160, 0)}
+
+# Constant storing the font used in the game window.
+FONT = "comicsansms" 
+
+# Constants storing the size of fonts used by several graphical elements. 
+HOLD_FONT_SIZE = 20
+QUEUE_FONT_SIZE = 20
