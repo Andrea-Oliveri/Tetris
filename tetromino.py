@@ -30,9 +30,9 @@ class Tetromino:
         """Special function that allows to get the attribute _letter from the exterior."""
         return str(self._letter)
 
-    def __getitem__(self, indeces):
+    def __getitem__(self, index):
         """Special function that allows to get items of attribute _MAPS from the exterior."""
-        return self._MAPS[self._rotation][indeces[0]][indeces[1]]
+        return list(self._MAPS[self._rotation][index])
 
     """Definition of a properties for parameter _MAPS_SIZE. This parameter can
     only be get from the exteriour, not set nor deleted."""
@@ -53,8 +53,8 @@ class Tetromino:
             for col in range(self.MAPS_SIZE["width"]):
                 grid_line = position[0]-line-1
                 grid_col = position[1]+col
-                if self[line, col]:
-                    if grid_line < 0 or grid_col < 0 or grid_col >= grid.SIZE["width"] or not current_grid.is_empty([grid_line, grid_col]):
+                if self[line][col]:
+                    if grid_line < 0 or grid_col < 0 or grid_col >= grid.SIZE["width"] or not current_grid.is_empty(grid_line, grid_col):
                         return True                
         return False
 

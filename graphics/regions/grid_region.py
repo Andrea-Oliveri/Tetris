@@ -31,8 +31,8 @@ class GridRegion(Region):
         coordinate systems used by pygame and grid."""        
         for line in range(grid.VISIBLE_SIZE["height"]):
             for col in range(grid.VISIBLE_SIZE["width"]):
-                if not current_grid.is_empty([line, col]):
-                    pygame.draw.rect(self._surface, COLORS[current_grid[line, col]],
+                if not current_grid.is_empty(line, col):
+                    pygame.draw.rect(self._surface, COLORS[current_grid[line][col]],
                                      (col*GRID_SQUARE_SIZE_PIXELS,
                                       (grid.VISIBLE_SIZE["height"]-1-line)*GRID_SQUARE_SIZE_PIXELS,
                                       GRID_SQUARE_SIZE_PIXELS, GRID_SQUARE_SIZE_PIXELS))
@@ -42,7 +42,7 @@ class GridRegion(Region):
         """Draws the current tetromino on the grid."""
         for line in range(tetromino.MAPS_SIZE["height"]):
             for col in range(tetromino.MAPS_SIZE["width"]):
-                if tetromino[line, col]:
+                if tetromino[line][col]:
                     square_col = tetromino.position[1]+col
                     square_line = grid.VISIBLE_SIZE["height"]-tetromino.position[0]+line
                     if square_line >= 0: 

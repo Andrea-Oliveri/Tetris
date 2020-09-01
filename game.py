@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import pygame
-from pygame.locals import QUIT, KEYDOWN, K_c, K_LEFT, K_RIGHT, K_UP, K_DOWN
+from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_LEFT, K_RIGHT, K_UP
 
-from constants.game import UPDATE_EVENT
+from constants.game import REFRESH_PERIOD, UPDATE_EVENT, LOCK_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY
 from grid import Grid
 from graphics.graphics import Window
 from random_bag import RandomBag
@@ -14,9 +14,7 @@ class Game:
     """Class Game. Class representing the game engine."""
 
     def __init__(self):
-        """Constructor for the class Game."""
-        self._update_period = 200
-        
+        """Constructor for the class Game."""        
         self._grid = Grid()
         self._window = Window()
         self._random = RandomBag()
@@ -29,8 +27,14 @@ class Game:
         self._level = 1
         self._goal = 5*self._level
         
+        self._locking = False
+        self._swap_allowed = True
+        self._keys_down = {}
+                
         pygame.init()
-        pygame.time.set_timer(UPDATE_EVENT, self._update_period)
+        pygame.time.set_timer(UPDATE_EVENT, REFRESH_PERIOD)
+        pygame.key.set_repeat(DAS_DELAY, DAS_RATE)
+
         
         
     def __del__(self):
@@ -39,37 +43,91 @@ class Game:
         
     
     def _spawn_tetromino(self):
-        """Gets the next tetromino to be spawned from the random generator,
-        spawns it and updates the queue."""
+        """Gets the next tetromino to be spawned from the random generator, and
+        attenpts spawning it. If coullisions allow it to spawn there, returns True, 
+        otherwise returns False (block out)."""
         current_piece, self._next_queue = self._random.next_pieces()
-        self._current_tetromino = Tetromino(current_piece)
+        new_tetromino = Tetromino(current_piece)
+        if new_tetromino.collision(new_tetromino.position, self._grid):
+            self._current_tetromino = None
+            return False
+        
+        self._current_tetromino = new_tetromino
+        self._fall_tetromino()
+        return True
 
+
+    def _fall_tetromino(self):
+        """If possible, moves the tetromino down. If not possible, starts a timer
+        that when reaches LOCK_DELAY locks the tetromino in place."""
+        if self._current_tetromino.move("down", self._grid):
+            pygame.time.set_timer(LOCK_EVENT, 0)
+            self._locking = False
+        elif not self._locking:
+            pygame.time.set_timer(LOCK_EVENT, LOCK_DELAY)
+            self._locking = True
+
+    
+    def _swap_held_tetromino(self):
+        """Performs the swap beween the current tetromino and the held tetromino,
+        if it is currently allowed."""             
+        if self._swap_allowed:
+            old_held = self._held_tetromino
+            self._held_tetromino = self._current_tetromino.letter
+
+            if old_held == None:
+                self._spawn_tetromino()
+            else:
+                self._current_tetromino = Tetromino(old_held)
             
+            self._swap_allowed = False
+    
+    
+    def _key_pressed(self, key):
+        """Reacts to key being pressed, except if it is being held (with the
+        only exception of right and left arrow). Updates self._keys_down to
+        say key is being pressed."""
+        key_held = self._keys_down.get(key, False)
+        self._keys_down[key] = True
+        
+        if key == K_LEFT:
+            self._current_tetromino.move("left", self._grid)
+        elif key == K_RIGHT:
+            self._current_tetromino.move("right", self._grid)
+        elif not key_held:
+            if key == K_c:
+                self._swap_held_tetromino()
+            elif key == K_UP:
+                self._spawn_tetromino()
+
+        
+    def _key_released(self, key):
+        """Reacts to the user releasing a key."""
+        self._keys_down[key] = False
+
+
     def run(self):
         """Runs a complete game."""
         running = True
+        game_completed = False
+
         while running:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     running = False
-                if event.type == KEYDOWN:
-                    if event.key == K_c:
-                        old_held = self._held_tetromino
-                        self._held_tetromino = self._current_tetromino.letter
-
-                        if old_held == None:
-                            self._spawn_tetromino()
-                        else:
-                            self._current_tetromino = Tetromino(old_held)
-                    elif event.key == K_LEFT:
-                        self._current_tetromino.move("left", self._grid)
-                    elif event.key == K_RIGHT:
-                        self._current_tetromino.move("right", self._grid)
-                    elif event.key == K_UP:
-                        self._spawn_tetromino()
+                elif not game_completed:
+                    if event.type == KEYDOWN:
+                        self._key_pressed(event.key)
+                    elif event.type == KEYUP:
+                        self._key_released(event.key) 
+                    elif event.type == UPDATE_EVENT:
+                        self._fall_tetromino()
+                    elif event.type == LOCK_EVENT:
+                        pygame.time.set_timer(LOCK_EVENT, 0)
+                        self._locking = False
+                        if not self._grid.lock_down(self._current_tetromino) or not self._spawn_tetromino():
+                            game_completed = True
                         
-                if event.type == UPDATE_EVENT:
-                    self._current_tetromino.move("down", self._grid)
                         
             self._window.update(current_grid=self._grid,
                                 current_tetromino=self._current_tetromino,

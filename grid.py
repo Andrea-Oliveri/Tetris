@@ -11,11 +11,27 @@ class Grid:
         """Constructor for the class Grid."""
         self._grid = [[" " for col in range(SIZE["width"])] for line in range(SIZE["height"])]
     
-    def __getitem__(self, indeces):
+    def __getitem__(self, index):
         """Special function that allows to get items of attribute _grid from the exterior."""
-        return self._grid[indeces[0]][indeces[1]]
+        return list(self._grid[index])
     
-    def is_empty(self, indeces):
+    def is_empty(self, line, col):
         """Function that returns True if the case described by indeces parameter is empty,
         False otherwise."""
-        return self._grid[indeces[0]][indeces[1]] == " "
+        return self._grid[line][col] == " "
+    
+    def lock_down(self, tetromino):
+        """Locks the tetromino in the grid into place. Returns True if the tetromino locked
+        down inside the visible area, False otherwise (Lock Out)."""
+        lock_visible = False
+        
+        for line in range(tetromino.MAPS_SIZE["height"]):
+            for col in range(tetromino.MAPS_SIZE["width"]):
+                grid_line = tetromino.position[0]-line-1
+                grid_col = tetromino.position[1]+col
+                if tetromino[line][col]:
+                    self._grid[grid_line][grid_col] = tetromino.letter
+                    if grid_line < VISIBLE_SIZE["height"]:
+                        lock_visible = True
+                    
+        return lock_visible
