@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pygame
-from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_LEFT, K_RIGHT, K_UP
+from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_LEFT, K_RIGHT, K_UP 
 
 from constants.game import REFRESH_PERIOD, UPDATE_EVENT, LOCK_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY
 from grid import Grid
@@ -91,9 +91,11 @@ class Game:
         elif not key_held:
             if key == K_c:
                 self._swap_held_tetromino()
-            elif key == K_UP:
-                self._spawn_tetromino()
-
+            elif key == K_x:
+                self._current_tetromino.rotate("clockwise", self._grid)
+            elif key == K_z: 
+                self._current_tetromino.rotate("anticlockwise", self._grid)
+                
         
     def _key_released(self, key):
         """Reacts to the user releasing a key."""
@@ -119,6 +121,7 @@ class Game:
                     self._locking = False
                     self._grid.lock_down(self._current_tetromino)
                     self._spawn_tetromino()
+                    self._swap_allowed = True
                         
                         
             self._window.update(current_grid=self._grid,

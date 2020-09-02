@@ -32,7 +32,7 @@ class Tetromino:
 
     def __getitem__(self, index):
         """Special function that allows to get items of attribute _MAPS from the exterior."""
-        return list(self._MAPS[self._rotation][index])
+        return tuple(self._MAPS[self._rotation][index])
 
     """Definition of a properties for parameter _MAPS_SIZE. This parameter can
     only be get from the exteriour, not set nor deleted."""
@@ -46,14 +46,14 @@ class Tetromino:
     only be get from the exteriour, not set nor deleted."""
     letter = property(_get_letter)
     
-    def collision(self, position, current_grid):
-        """Returns True if moving the tetromino to the position passed as parameter
-        resulted in a collision, False otherwise."""
+    def _collision(self, position, rotation, current_grid):
+        """Returns True if moving the tetromino to the position and rotation 
+        passed as parameter resulted in a collision, False otherwise."""
         for line in range(self.MAPS_SIZE["height"]):
             for col in range(self.MAPS_SIZE["width"]):
                 grid_line = position[0]-line-1
                 grid_col = position[1]+col
-                if self[line][col]:
+                if self._MAPS[rotation][line][col]:
                     if grid_line < 0 or grid_col < 0 or grid_col >= grid.SIZE["width"] or not current_grid.is_empty(grid_line, grid_col):
                         return True                
         return False
@@ -61,6 +61,8 @@ class Tetromino:
     def rotate(self, direction, grid):
         """Rotates the tetromino in the desired direction ("clockwise" or "anticlockwise")."""
         raise NotImplementedError
+        
+            
     
     def move(self, direction, grid):
         """Moves the tetromino in the desired direction ("left" or "right" or "down").
@@ -73,7 +75,7 @@ class Tetromino:
         elif direction == "down":
             new_position[0] -= 1
         
-        if not self.collision(new_position, grid):
+        if not self._collision(new_position, self._rotation, grid):
             self._position = new_position
             return True
         
