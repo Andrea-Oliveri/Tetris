@@ -3,7 +3,7 @@
 import pygame
 from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_LEFT, K_RIGHT, K_UP 
 
-from constants.game import REFRESH_PERIOD, UPDATE_EVENT, LOCK_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY
+from constants.game import REFRESH_PERIOD, UPDATE_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY
 from grid import Grid
 from graphics.graphics import Window
 from random_bag import RandomBag
@@ -19,7 +19,6 @@ class Game:
         self._window = Window()
         self._random = RandomBag()
         
-        self._locking = False
         self._swap_allowed = True
         self._keys_down = {}
         
@@ -54,12 +53,11 @@ class Game:
     def _fall_tetromino(self):
         """If possible, moves the tetromino down. If not possible, starts a timer
         that when reaches LOCK_DELAY locks the tetromino in place."""
-        if self._current_tetromino.move("down", self._grid):
-            pygame.time.set_timer(LOCK_EVENT, 0)
-            self._locking = False
-        elif not self._locking:
-            pygame.time.set_timer(LOCK_EVENT, LOCK_DELAY)
-            self._locking = True
+        if not self._current_tetromino.move("down", self._grid):
+            if self._current_tetromino.lock_counter >= LOCK_DELAY:
+                self._grid.lock_down(self._current_tetromino)
+                self._spawn_tetromino()
+                self._swap_allowed = True
 
     
     def _swap_held_tetromino(self):
@@ -116,12 +114,6 @@ class Game:
                     self._key_released(event.key) 
                 elif event.type == UPDATE_EVENT:
                     self._fall_tetromino()
-                elif event.type == LOCK_EVENT:
-                    pygame.time.set_timer(LOCK_EVENT, 0)
-                    self._locking = False
-                    self._grid.lock_down(self._current_tetromino)
-                    self._spawn_tetromino()
-                    self._swap_allowed = True
                         
                         
             self._window.update(current_grid=self._grid,

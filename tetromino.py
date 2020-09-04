@@ -3,7 +3,7 @@
 from math import floor
 
 from constants import grid
-from constants.tetromino import MAPS
+from constants.tetromino import MAPS, ROTATION_TESTS
 
 
 class Tetromino:
@@ -17,6 +17,7 @@ class Tetromino:
         self._MAPS_SIZE = {"height": len(self._MAPS["DEG_0"]), "width": len(self._MAPS["DEG_0"][0])}
         self._rotation = "DEG_0"
         self._position = [grid.SPAWN_ROW, floor((grid.SIZE["width"]-self._MAPS_SIZE["width"])/2)]
+        self._lock_counter = 0
 
     def _get_MAPS_SIZE(self):
         """Special function that allows to get the attribute _MAPS_SIZE from the exterior."""
@@ -29,6 +30,10 @@ class Tetromino:
     def _get_letter(self):
         """Special function that allows to get the attribute _letter from the exterior."""
         return str(self._letter)
+
+    def _get_lock_counter(self):
+        """Special function that allows to get the attribute _lock_counter from the exterior."""
+        return int(self._lock_counter)
 
     def __getitem__(self, index):
         """Special function that allows to get items of attribute _MAPS from the exterior."""
@@ -46,6 +51,10 @@ class Tetromino:
     only be get from the exteriour, not set nor deleted."""
     letter = property(_get_letter)
     
+    """Definition of a properties for parameter _lock_counter. This parameter can
+    only be get from the exteriour, not set nor deleted."""
+    lock_counter = property(_get_lock_counter)
+    
     def _collision(self, position, rotation, current_grid):
         """Returns True if moving the tetromino to the position and rotation 
         passed as parameter resulted in a collision, False otherwise."""
@@ -58,13 +67,41 @@ class Tetromino:
                         return True                
         return False
 
-    def rotate(self, direction, grid):
+    def rotate(self, direction, current_grid):
         """Rotates the tetromino in the desired direction ("clockwise" or "anticlockwise")."""
-        raise NotImplementedError
+        new_rotation = None
+        if direction == "clockwise":
+            if self._rotation == "DEG_0":
+                new_rotation = "DEG_90"
+            elif self._rotation == "DEG_90":
+                new_rotation = "DEG_180"
+            elif self._rotation == "DEG_180":
+                new_rotation = "DEG_270"
+            elif self._rotation == "DEG_270":
+                new_rotation = "DEG_0"
+        elif direction == "anticlockwise":
+            if self._rotation == "DEG_0":
+                new_rotation = "DEG_270"
+            elif self._rotation == "DEG_90":
+                new_rotation = "DEG_0"
+            elif self._rotation == "DEG_180":
+                new_rotation = "DEG_90"
+            elif self._rotation == "DEG_270":
+                new_rotation = "DEG_180"
         
-            
+        if self._letter == "O":
+            self._rotation = new_rotation
+            return
     
-    def move(self, direction, grid):
+        for delta_position in ROTATION_TESTS[self._letter][(self._rotation, new_rotation)]:
+            new_position = [self._position[0] + delta_position[0], self._position[1] + delta_position[1]]
+            if not self._collision(new_position, new_rotation, current_grid):
+                self._position = new_position
+                self._rotation = new_rotation
+                break
+
+    
+    def move(self, direction, current_grid):
         """Moves the tetromino in the desired direction ("left" or "right" or "down").
         Returns True if the tetromino was moved and False if collisions did not allow it."""
         new_position = self.position
@@ -75,9 +112,15 @@ class Tetromino:
         elif direction == "down":
             new_position[0] -= 1
         
-        if not self._collision(new_position, self._rotation, grid):
+        if not self._collision(new_position, self._rotation, current_grid):
             self._position = new_position
+            if direction == "down":
+                self._lock_counter = 0
+            
             return True
         
+        if direction == "down":
+            self._lock_counter += 1
+            
         return False
         
