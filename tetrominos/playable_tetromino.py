@@ -5,7 +5,7 @@ from math import floor
 from tetrominos.tetromino import Tetromino
 from tetrominos.ghost_tetromino import GhostTetromino
 from constants import grid
-from constants.tetromino import ROTATION_TESTS
+from constants.tetromino import ROTATION_TESTS, GRAVITY
 
 
 class PlayableTetromino(Tetromino):
@@ -16,6 +16,7 @@ class PlayableTetromino(Tetromino):
         """Constructor for the class Tetromino."""
         Tetromino.__init__(self, letter, "DEG_0")
         self._position = [grid.SPAWN_ROW, floor((grid.SIZE["width"]-self._MAPS_SIZE["width"])/2)]
+        self._decimal_drop = 0.
         self._ghost_position = self._compute_ghost_position(current_grid)
         self._lock_counter = 0
 
@@ -94,28 +95,40 @@ class PlayableTetromino(Tetromino):
                 break
 
     
-    def move(self, direction, current_grid):
-        """Moves the tetromino in the desired direction ("left" or "right" or "down").
-        Returns True if the tetromino was moved and False if collisions did not allow it."""
+    def move_down(self, current_grid, level):
+        """Moves the tetromino down. The level parameter is needed to know what
+        value of gravity to use. Returns True if the tetromino was moved and
+        False if collisions did not allow it."""
         new_position = self.position
+                
+        new_decimal_drop = self._decimal_drop + GRAVITY[level]
+        new_position[0] -= int(new_decimal_drop)
+        new_decimal_drop -= int(new_decimal_drop)
+        
+        if not self._collision(new_position, self._rotation, current_grid):
+            self._position = new_position
+            self._decimal_drop = new_decimal_drop
+            self._lock_counter = 0
+            return True
+        
+        self._lock_counter += 1            
+        return False
+    
+        
+    def move_sideways(self, direction, current_grid):
+        """Moves the tetromino either "left" or "right". Returns True if the
+        tetromino was moved and False if collisions did not allow it."""
+        new_position = self.position
+                
         if direction == "left":
             new_position[1] -= 1
         elif direction == "right":
             new_position[1] += 1
-        elif direction == "down":
-            new_position[0] -= 1
         
         if not self._collision(new_position, self._rotation, current_grid):
             self._position = new_position
-            if direction == "left" or direction == "right":
-                self._ghost_position = self._compute_ghost_position(current_grid)
-            elif direction == "down":
-                self._lock_counter = 0
-            
+            self._ghost_position = self._compute_ghost_position(current_grid)
             return True
-        
-        if direction == "down":
-            self._lock_counter += 1
             
         return False
         

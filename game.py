@@ -25,11 +25,11 @@ class Game:
         self._held_tetromino = None
         self._next_queue = None
         self._current_tetromino = None
-        self._spawn_tetromino()
         self._score = 0
         self._level = 1
         self._goal = FIXED_GOAL
-                
+        self._spawn_tetromino()        
+        
         pygame.init()
         pygame.time.set_timer(FRAME_EVENT, REFRESH_PERIOD)
         pygame.key.set_repeat(DAS_DELAY, DAS_RATE)
@@ -53,7 +53,7 @@ class Game:
     def _fall_tetromino(self):
         """If possible, moves the tetromino down. If not possible, starts a timer
         that when reaches LOCK_DELAY locks the tetromino in place."""
-        if not self._current_tetromino.move("down", self._grid):
+        if not self._current_tetromino.move_down(self._grid, self._level):
             if self._current_tetromino.lock_counter >= LOCK_DELAY:
                 score, lines_cleared = self._grid.lock_down(self._current_tetromino)
                 self._score += score
@@ -91,9 +91,9 @@ class Game:
         self._keys_down[key] = True
         
         if key == K_LEFT:
-            self._current_tetromino.move("left", self._grid)
+            self._current_tetromino.move_sideways("left", self._grid)
         elif key == K_RIGHT:
-            self._current_tetromino.move("right", self._grid)
+            self._current_tetromino.move_sideways("right", self._grid)
         elif not key_held:
             if key == K_c or key == K_LSHIFT or key == K_RSHIFT:
                 self._swap_held_tetromino()
@@ -133,11 +133,13 @@ class Game:
                                 score=self._score, level=self._level, goal=self._goal)
                     
                 #DEBUG
-                l.append(a.tick())
+                a.tick()
+                l.append(a.get_fps())
                 print(a.get_fps())
                 ###################
         
         # DEBUG:
+        l = [val for val in l if val != 0]
         print("Min: {}".format(min(l)))
         print("Max: {}".format(max(l)))
         print("Mean: {}".format(sum(l)/len(l)))
