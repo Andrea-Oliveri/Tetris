@@ -3,7 +3,7 @@
 import pygame
 from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_LEFT, K_RIGHT, K_UP, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL
 
-from constants.game import REFRESH_PERIOD, UPDATE_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY, FIXED_GOAL
+from constants.game import REFRESH_PERIOD, FRAME_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY, FIXED_GOAL
 from grid import Grid
 from graphics.graphics import Window
 from random_bag import RandomBag
@@ -31,7 +31,7 @@ class Game:
         self._goal = FIXED_GOAL
                 
         pygame.init()
-        pygame.time.set_timer(UPDATE_EVENT, REFRESH_PERIOD)
+        pygame.time.set_timer(FRAME_EVENT, REFRESH_PERIOD)
         pygame.key.set_repeat(DAS_DELAY, DAS_RATE)
 
         
@@ -122,18 +122,17 @@ class Game:
                     self._key_pressed(event.key)
                 elif event.type == KEYUP:
                     self._key_released(event.key) 
-                elif event.type == UPDATE_EVENT:
+                elif event.type == FRAME_EVENT:
                     self._fall_tetromino()
-                
+                    self._window.update(current_grid=self._grid,
+                                current_tetromino=self._current_tetromino,
+                                queue=self._next_queue, held=self._held_tetromino,
+                                score=self._score, level=self._level, goal=self._goal)
+                    
                 #DEBUG
                 l.append(a.tick())
                 print(a.get_fps())
                 ###################
-                
-            self._window.update(current_grid=self._grid,
-                                current_tetromino=self._current_tetromino,
-                                queue=self._next_queue, held=self._held_tetromino,
-                                score=self._score, level=self._level, goal=self._goal)
         
         # DEBUG:
         print("Min: {}".format(min(l)))

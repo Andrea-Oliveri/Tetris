@@ -6,7 +6,7 @@ from pygame.locals import USEREVENT
 REFRESH_PERIOD = 17
 
 # Constant defined as the id of the event triggered by the pygame timers.
-UPDATE_EVENT = USEREVENT+1
+FRAME_EVENT = USEREVENT+1
 
 # Constant defining the DAS Delay in ms
 DAS_DELAY = 250
