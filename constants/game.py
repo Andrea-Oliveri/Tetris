@@ -16,3 +16,6 @@ DAS_RATE = 50
 
 # Constant defining the delay to wait before locking a tetromino in place in frames.
 LOCK_DELAY = 500 / REFRESH_PERIOD
+
+# Constant defining the fixed goal to increase by one level.
+FIXED_GOAL = 10

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import pygame
-from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_LEFT, K_RIGHT, K_UP 
+from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_LEFT, K_RIGHT, K_UP, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL
 
-from constants.game import REFRESH_PERIOD, UPDATE_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY
+from constants.game import REFRESH_PERIOD, UPDATE_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY, FIXED_GOAL
 from grid import Grid
 from graphics.graphics import Window
 from random_bag import RandomBag
@@ -28,7 +28,7 @@ class Game:
         self._spawn_tetromino()
         self._score = 0
         self._level = 1
-        self._goal = 5*self._level
+        self._goal = FIXED_GOAL
                 
         pygame.init()
         pygame.time.set_timer(UPDATE_EVENT, REFRESH_PERIOD)
@@ -55,7 +55,12 @@ class Game:
         that when reaches LOCK_DELAY locks the tetromino in place."""
         if not self._current_tetromino.move("down", self._grid):
             if self._current_tetromino.lock_counter >= LOCK_DELAY:
-                self._grid.lock_down(self._current_tetromino)
+                score = self._grid.lock_down(self._current_tetromino)
+                self._score += score
+                self._goal -= score
+                if self._goal <= 0:
+                    self._level += 1
+                    self._goal = FIXED_GOAL
                 self._spawn_tetromino()
                 self._swap_allowed = True
 
@@ -87,11 +92,11 @@ class Game:
         elif key == K_RIGHT:
             self._current_tetromino.move("right", self._grid)
         elif not key_held:
-            if key == K_c:
+            if key == K_c or key == K_LSHIFT or key == K_RSHIFT:
                 self._swap_held_tetromino()
-            elif key == K_x:
+            elif key == K_x or key == K_UP:
                 self._current_tetromino.rotate("clockwise", self._grid)
-            elif key == K_z: 
+            elif key == K_z or key == K_LCTRL or key == K_RCTRL:
                 self._current_tetromino.rotate("anticlockwise", self._grid)
                 
         
@@ -103,7 +108,12 @@ class Game:
     def run(self):
         """Runs a complete game."""
         running = True
-
+        
+        # DEBUG:
+        a = pygame.time.Clock()
+        l = []
+        ####################
+        
         while running:
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -114,10 +124,20 @@ class Game:
                     self._key_released(event.key) 
                 elif event.type == UPDATE_EVENT:
                     self._fall_tetromino()
-                        
-                        
+                
+                #DEBUG
+                l.append(a.tick())
+                print(a.get_fps())
+                ###################
+                
             self._window.update(current_grid=self._grid,
                                 current_tetromino=self._current_tetromino,
                                 queue=self._next_queue, held=self._held_tetromino,
                                 score=self._score, level=self._level, goal=self._goal)
+        
+        # DEBUG:
+        print("Min: {}".format(min(l)))
+        print("Max: {}".format(max(l)))
+        print("Mean: {}".format(sum(l)/len(l)))
+        ####################
 

@@ -29,6 +29,24 @@ class Grid:
                 grid_col = tetromino.position[1]+col
                 if tetromino[line][col]:
                     self._grid[grid_line][grid_col] = tetromino.letter
+        
+        return self._clear_lines()
+    
+    def _clear_lines(self):
+        """Function that clears the complete lines in the grid and returns the obtained score."""
+        score = 0
+        lines_cleared = []
+        
+        for line in range(SIZE["height"]):
+            if all([not self.is_empty(line, col) for col in range(SIZE["width"])]):
+                lines_cleared.append(line)
+                score += 1 
+        
+        for line in sorted(lines_cleared, reverse=True):
+            del self._grid[line]
+            self._grid.append([" " for _ in range(SIZE["width"])])
+        
+        return score
 
     # DEBUG:
     def __repr__(self):
