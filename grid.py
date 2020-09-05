@@ -46,7 +46,7 @@ class Grid:
             del self._grid[line]
             self._grid.append([" " for _ in range(SIZE["width"])])
         
-        return score
+        return score, len(lines_cleared)
 
     # DEBUG:
     def __repr__(self):

@@ -55,9 +55,9 @@ class Game:
         that when reaches LOCK_DELAY locks the tetromino in place."""
         if not self._current_tetromino.move("down", self._grid):
             if self._current_tetromino.lock_counter >= LOCK_DELAY:
-                score = self._grid.lock_down(self._current_tetromino)
+                score, lines_cleared = self._grid.lock_down(self._current_tetromino)
                 self._score += score
-                self._goal -= score
+                self._goal -= lines_cleared
                 if self._goal <= 0:
                     self._level += 1
                     self._goal = FIXED_GOAL

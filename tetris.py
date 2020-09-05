@@ -10,8 +10,6 @@
 #    Clean a bit code: tetromino detect collisions has a +1, grid_region.update has -1, lock_down has -1 ...
 #    Complete grid._clear_lines 
 
-#   Up arrow: Rotating 90 degrees clockwise, Down arrow key: Non-locking soft drop, Space bar: Locking hard drop, C key / Shift key: Hold piece, Z key: Rotating 90 degrees counterclockwise
-
 
 from game import Game
 
