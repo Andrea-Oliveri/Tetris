@@ -19,3 +19,6 @@ LOCK_DELAY = 500 / REFRESH_PERIOD
 
 # Constant defining the fixed goal to increase by one level.
 FIXED_GOAL = 10
+
+# Constant defining the maximum level that can be reached.
+LEVEL_CAP = 15

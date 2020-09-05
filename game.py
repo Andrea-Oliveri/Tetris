@@ -3,7 +3,7 @@
 import pygame
 from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_LEFT, K_RIGHT, K_UP, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL
 
-from constants.game import REFRESH_PERIOD, FRAME_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY, FIXED_GOAL
+from constants.game import REFRESH_PERIOD, FRAME_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY, FIXED_GOAL, LEVEL_CAP
 from grid import Grid
 from graphics.graphics import Window
 from random_bag import RandomBag
@@ -59,8 +59,11 @@ class Game:
                 self._score += score
                 self._goal -= lines_cleared
                 if self._goal <= 0:
-                    self._level += 1
-                    self._goal = FIXED_GOAL
+                    if self._level < LEVEL_CAP:
+                        self._level += 1
+                        self._goal = FIXED_GOAL
+                    else:
+                        self._goal = 0
                 self._spawn_tetromino()
                 self._swap_allowed = True
 
