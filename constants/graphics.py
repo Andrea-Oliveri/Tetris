@@ -15,6 +15,7 @@ GRID_INTERNAL_LINE_WIDTH_PIXELS = 1
 COLORS = {"background": (230, 230, 230), "grid_line": (50, 50, 50), "text": (30, 30, 30),
           "I": (0, 240, 240), "O": (240, 240, 0), "T": (160, 0, 240),
           "S": (0, 240, 0), "Z": (240, 0, 0), "J": (0, 0, 240), "L": (240, 160, 0)}
+GHOST_COLOR_FACTOR = 0.75
 
 # Constant storing the font used in the game window.
 FONT = "comicsansms" 

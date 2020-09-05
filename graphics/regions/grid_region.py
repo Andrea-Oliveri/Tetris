@@ -2,7 +2,7 @@
 
 import pygame
 
-from constants.graphics import COLORS, GRID_SQUARE_SIZE_PIXELS, GRID_INTERNAL_LINE_WIDTH_PIXELS, GRID_EXTERNAL_LINE_WIDTH_PIXELS
+from constants.graphics import COLORS, GHOST_COLOR_FACTOR, GRID_SQUARE_SIZE_PIXELS, GRID_INTERNAL_LINE_WIDTH_PIXELS, GRID_EXTERNAL_LINE_WIDTH_PIXELS
 from constants import grid
 from graphics.regions.region import Region
 
@@ -22,7 +22,8 @@ class GridRegion(Region):
         
         self._surface.fill(COLORS["background"])
         self._draw_current_grid(kwargs["current_grid"])
-        self._draw_current_tetromino(kwargs["current_tetromino"])
+        self._draw_tetromino(kwargs["current_tetromino"].ghost, True)
+        self._draw_tetromino(kwargs["current_tetromino"], False)
         self._draw_borders()
                 
     
@@ -36,17 +37,21 @@ class GridRegion(Region):
                                      (col*GRID_SQUARE_SIZE_PIXELS,
                                       (grid.VISIBLE_SIZE["height"]-1-line)*GRID_SQUARE_SIZE_PIXELS,
                                       GRID_SQUARE_SIZE_PIXELS, GRID_SQUARE_SIZE_PIXELS))
-                
 
-    def _draw_current_tetromino(self, tetromino):
-        """Draws the current tetromino on the grid."""
+
+    def _draw_tetromino(self, tetromino, ghost=False):
+        """Draws either the current tetromino or its ghost on the grid."""
         for line in range(tetromino.MAPS_SIZE["height"]):
             for col in range(tetromino.MAPS_SIZE["width"]):
                 if tetromino[line][col]:
                     square_col = tetromino.position[1]+col
                     square_line = grid.VISIBLE_SIZE["height"]-tetromino.position[0]+line
                     if square_line >= 0: 
-                        pygame.draw.rect(self._surface, COLORS[tetromino.letter],
+                        color = COLORS[tetromino.letter]
+                        if ghost:
+                            color = [val*GHOST_COLOR_FACTOR for val in color]
+                            
+                        pygame.draw.rect(self._surface, color,
                                          (square_col*GRID_SQUARE_SIZE_PIXELS,
                                           square_line*GRID_SQUARE_SIZE_PIXELS,
                                           GRID_SQUARE_SIZE_PIXELS, GRID_SQUARE_SIZE_PIXELS))

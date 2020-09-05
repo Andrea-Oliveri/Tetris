@@ -7,7 +7,7 @@ from constants.game import REFRESH_PERIOD, UPDATE_EVENT, DAS_DELAY, DAS_RATE, LO
 from grid import Grid
 from graphics.graphics import Window
 from random_bag import RandomBag
-from tetromino import Tetromino
+from tetrominos.playable_tetromino import PlayableTetromino
 
 
 class Game:
@@ -46,7 +46,7 @@ class Game:
         attenpts spawning it. If coullisions allow it to spawn there, returns True, 
         otherwise returns False (block out)."""
         current_piece, self._next_queue = self._random.next_pieces()
-        self._current_tetromino = Tetromino(current_piece)  
+        self._current_tetromino = PlayableTetromino(current_piece, self._grid)  
         self._fall_tetromino()
 
 
@@ -75,7 +75,7 @@ class Game:
             if old_held == None:
                 self._spawn_tetromino()
             else:
-                self._current_tetromino = Tetromino(old_held)
+                self._current_tetromino = PlayableTetromino(old_held, self._grid)
             
             self._swap_allowed = False
     
