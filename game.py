@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import pygame
-from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_SPACE, K_LEFT, K_RIGHT, K_UP, K_DOWN, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL
+from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_r, K_SPACE, K_LEFT, K_RIGHT, K_UP, K_DOWN, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL
 
 from constants.game import REFRESH_PERIOD, FRAME_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY, FIXED_GOAL, LEVEL_CAP
 from grid import Grid
 from graphics.graphics import Window
 from random_bag import RandomBag
 from tetrominos.playable_tetromino import PlayableTetromino
+from sound import SoundEngine
 
 
 class Game:
@@ -18,6 +19,7 @@ class Game:
         self._grid = Grid()
         self._window = Window()
         self._random = RandomBag()
+        self._sound = SoundEngine()
         
         self._swap_allowed = True
         self._keys_down = {}
@@ -108,6 +110,8 @@ class Game:
                 self._current_tetromino.rotate("clockwise", self._grid)
             elif key == K_z or key == K_LCTRL or key == K_RCTRL:
                 self._current_tetromino.rotate("anticlockwise", self._grid)
+            elif key == K_r:
+                self._sound.change_music()
                 
         
     def _key_released(self, key):
