@@ -51,21 +51,22 @@ class Game:
 
 
     def _fall_tetromino(self):
-        """If possible, moves the tetromino down. If not possible, starts a timer
-        that when reaches LOCK_DELAY locks the tetromino in place."""
-        if not self._current_tetromino.move_down(self._grid, self._level):
-            if self._current_tetromino.lock_counter >= LOCK_DELAY:
-                score, lines_cleared = self._grid.lock_down(self._current_tetromino)
-                self._score += score
-                self._goal -= lines_cleared
-                if self._goal <= 0:
-                    if self._level < LEVEL_CAP:
-                        self._level += 1
-                        self._goal = FIXED_GOAL
-                    else:
-                        self._goal = 0
-                self._spawn_tetromino()
-                self._swap_allowed = True
+        """Calls a method so that tetromino moves down if possible, then 
+        checks the lock counter of the tetromino and, if larger than LOCK_DELAY,
+        locks it into place, updates score, goal and level and spawns new tetromino."""
+        self._current_tetromino.move_down(self._grid, self._level)
+        if self._current_tetromino.lock_counter >= LOCK_DELAY:
+            score, lines_cleared = self._grid.lock_down(self._current_tetromino)
+            self._score += score
+            self._goal -= lines_cleared
+            if self._goal <= 0:
+                if self._level < LEVEL_CAP:
+                    self._level += 1
+                    self._goal = FIXED_GOAL
+                else:
+                    self._goal = 0
+            self._spawn_tetromino()
+            self._swap_allowed = True
 
     
     def _swap_held_tetromino(self):
@@ -135,7 +136,7 @@ class Game:
                 #DEBUG
                 a.tick()
                 l.append(a.get_fps())
-                print(a.get_fps())
+                #print(a.get_fps())
                 ###################
         
         # DEBUG:
