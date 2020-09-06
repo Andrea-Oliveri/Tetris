@@ -47,7 +47,12 @@ class PlayableTetromino(Tetromino):
                     if grid_line < 0 or grid_col < 0 or grid_col >= grid.SIZE["width"] or not current_grid.is_empty(grid_line, grid_col):
                         return True                
         return False
-
+    
+    def _touching(self, current_grid):
+        """Returns True if the tetromino is touching the a block of the grid which
+        would impede his movement down, False otherwise."""
+        return self._collision([self.position[0]-1, self.position[1]], self._rotation, current_grid)
+        
     def _compute_ghost_position(self, current_grid):
         """Returns the position that the ghost piece can take."""
         line = self._position[0]
@@ -95,28 +100,32 @@ class PlayableTetromino(Tetromino):
                 self._ghost_position = self._compute_ghost_position(current_grid)
                 self._lock_counter = 0
                 break
-
+            
     
     def move_down(self, current_grid, level):
         """Moves the tetromino down if collisions allow it.
         The level parameter is needed to know what value of gravity to use."""
-        self._lock_counter += 1       
         total_decimal_drop = self._decimal_drop + GRAVITY[level]
         integer_drop = int(total_decimal_drop)
         self._decimal_drop = total_decimal_drop - integer_drop
         
-        while integer_drop > 0:
-            new_position = self.position
-            new_position[0] -= 1
-            
-            if not self._collision(new_position, self._rotation, current_grid):
-                self._position = new_position
+        if self._touching(current_grid):
+            self._lock_counter += 1
+        else:
+            dropping = True
+            while integer_drop > 0 and dropping:
+                new_position = self.position
+                new_position[0] -= 1
+                
+                if not self._collision(new_position, self._rotation, current_grid):
+                    self._position = new_position
+                else:
+                    dropping = False
+                    
                 integer_drop -= 1
-                self._lock_counter = 0
-            else:
-                print(self._decimal_drop)
-                break
-            
+                
+            self._lock_counter = 0
+        
         
     def move_sideways(self, direction, current_grid):
         """Moves the tetromino either "left" or "right" if collision allow it."""
