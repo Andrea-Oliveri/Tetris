@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#import ctypes
-#ctypes.windll.user32.SetProcessDPIAware()
-
-
 # TODO:
 #    Implemet top out by lock out (piece locked out entirely in non-visible region)
 #    Implement top out by block out (piece cannot be spawned because block occupied)

@@ -5,7 +5,7 @@ from math import floor
 from tetrominos.tetromino import Tetromino
 from tetrominos.ghost_tetromino import GhostTetromino
 from constants import grid
-from constants.tetromino import ROTATION_TESTS, GRAVITY
+from constants.tetromino import ROTATION_TESTS, GRAVITY, SOFT_DROP_FACTOR, HARD_DROP_GRAVITY
 
 
 class PlayableTetromino(Tetromino):
@@ -100,12 +100,36 @@ class PlayableTetromino(Tetromino):
                 self._ghost_position = self._compute_ghost_position(current_grid)
                 self._lock_counter = 0
                 break
-            
     
-    def move_down(self, current_grid, level):
+    def move_sideways(self, direction, current_grid):
+        """Moves the tetromino either "left" or "right" if collision allow it."""
+        new_position = self.position
+                
+        if direction == "left":
+            new_position[1] -= 1
+        elif direction == "right":
+            new_position[1] += 1
+        
+        if not self._collision(new_position, self._rotation, current_grid):
+            self._position = new_position
+            self._ghost_position = self._compute_ghost_position(current_grid)
+            self._lock_counter = 0
+    
+    def move_down(self, current_grid, level, drop_type="normal"):
         """Moves the tetromino down if collisions allow it.
-        The level parameter is needed to know what value of gravity to use."""
-        total_decimal_drop = self._decimal_drop + GRAVITY[level]
+        The level parameter is needed to know what value of gravity to use.
+        We can move with three types of drops: "normal", "soft" or "hard"."""
+        gravity = None
+        if drop_type == "normal":
+            gravity = GRAVITY[level]
+        elif drop_type == "soft":
+            gravity = SOFT_DROP_FACTOR*GRAVITY[level]
+        elif drop_type == "hard":
+            gravity = HARD_DROP_GRAVITY
+        else:
+            raise TypeError("PlayableTetromino.move_down() parameter drop_type must be either normal, soft or hard")
+        
+        total_decimal_drop = self._decimal_drop + gravity
         integer_drop = int(total_decimal_drop)
         self._decimal_drop = total_decimal_drop - integer_drop
         
@@ -126,17 +150,4 @@ class PlayableTetromino(Tetromino):
                 
             self._lock_counter = 0
         
-        
-    def move_sideways(self, direction, current_grid):
-        """Moves the tetromino either "left" or "right" if collision allow it."""
-        new_position = self.position
-                
-        if direction == "left":
-            new_position[1] -= 1
-        elif direction == "right":
-            new_position[1] += 1
-        
-        if not self._collision(new_position, self._rotation, current_grid):
-            self._position = new_position
-            self._ghost_position = self._compute_ghost_position(current_grid)
-            self._lock_counter = 0
+    

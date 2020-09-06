@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pygame
-from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_LEFT, K_RIGHT, K_UP, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL
+from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_SPACE, K_LEFT, K_RIGHT, K_UP, K_DOWN, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL
 
 from constants.game import REFRESH_PERIOD, FRAME_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY, FIXED_GOAL, LEVEL_CAP
 from grid import Grid
@@ -54,7 +54,13 @@ class Game:
         """Calls a method so that tetromino moves down if possible, then 
         checks the lock counter of the tetromino and, if larger than LOCK_DELAY,
         locks it into place, updates score, goal and level and spawns new tetromino."""
-        self._current_tetromino.move_down(self._grid, self._level)
+        if self._keys_down.get(K_SPACE, False):
+            self._current_tetromino.move_down(self._grid, self._level, "hard")
+        elif self._keys_down.get(K_DOWN, False):
+            self._current_tetromino.move_down(self._grid, self._level, "soft")
+        else:
+            self._current_tetromino.move_down(self._grid, self._level, "normal")        
+        
         if self._current_tetromino.lock_counter >= LOCK_DELAY:
             score, lines_cleared = self._grid.lock_down(self._current_tetromino)
             self._score += score
