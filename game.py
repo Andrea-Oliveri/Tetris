@@ -22,7 +22,7 @@ class Game:
         self._sound = SoundEngine()
         
         self._running = True
-        self._finished = False
+        self._topped_out = False
         self._swap_allowed = True
         self._keys_down = {}
         
@@ -51,6 +51,8 @@ class Game:
         otherwise returns False (block out)."""
         current_piece, self._next_queue = self._random.next_pieces()
         self._current_tetromino = PlayableTetromino(current_piece, self._grid)      
+        if self._current_tetromino.blocked_out:
+            self._topped_out = True
 
 
     def _fall_tetromino(self):
@@ -78,7 +80,7 @@ class Game:
                     self._goal = 0
             
             if lock_out:
-                self._finished = True
+                self._topped_out = True
             
             self._spawn_tetromino()
             self._swap_allowed = True
@@ -134,7 +136,7 @@ class Game:
         l = []
         ####################
         
-        while self._running and not self._finished:
+        while self._running and not self._topped_out:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     self._running = False

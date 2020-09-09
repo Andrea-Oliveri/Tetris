@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from constants.grid import SIZE, VISIBLE_SIZE, SPAWN_ROW
+from constants.grid import SIZE, VISIBLE_SIZE
 
 class Grid:
     """Class Grid. Class storing the current state of the grid and its parameters.

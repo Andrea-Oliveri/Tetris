@@ -10,17 +10,22 @@ from constants.tetromino import ROTATION_TESTS, GRAVITY, SOFT_DROP_FACTOR, HARD_
 
 class PlayableTetromino(Tetromino):
     """Class PlayableTetromino. Class representing all playable tetrominos.
-    Tetrominos spawn in rows 20 and 21, and are centered horizontally, eventually rounded to the left."""
+    Tetrominos spawn in rows 20 and 21, and are centered horizontally, eventually rounded to the left.
+    If possible, they immediately drop one block upon spawning.
+    _blocked_out attribute is only needed to see if the tetromino already collides with a block upon
+    spawning, which resuts in the game ending."""
     
     def __init__(self, letter, current_grid):
         """Constructor for the class Tetromino."""
         Tetromino.__init__(self, letter, "DEG_0")
         self._position = [grid.SPAWN_ROW, floor((grid.SIZE["width"]-self._MAPS_SIZE["width"])/2)]
-        self._initial_drop(current_grid)
+        self._blocked_out = self._collision(self._position, self._rotation, current_grid)
+        if not self._blocked_out:
+            self._initial_drop(current_grid)
         self._decimal_drop = 0.
         self._ghost_position = self._compute_ghost_position(current_grid)
         self._lock_counter = 0
-
+        
     def _get_lock_counter(self):
         """Special function that allows to get the attribute _lock_counter from the exterior."""
         return int(self._lock_counter)
@@ -29,6 +34,10 @@ class PlayableTetromino(Tetromino):
         """Special function that allows to get the corresponding GhostTetromino from the exterior."""
         return GhostTetromino(self._letter, self._ghost_position, self._rotation)
     
+    def _get_blocked_out(self):
+        """Special function that allows to get the attribute _blocked_out from the exterior."""
+        return self._blocked_out
+    
     """Definition of a properties for parameter _lock_counter. This parameter can
     only be get from the exteriour, not set nor deleted."""
     lock_counter = property(_get_lock_counter)
@@ -36,6 +45,10 @@ class PlayableTetromino(Tetromino):
     """Definition of a properties for parameter _ghost. This parameter can
     only be get from the exteriour, not set nor deleted."""
     ghost = property(_get_ghost)
+    
+    """Definition of a properties for parameter _blocked_out. This parameter can
+    only be get from the exteriour, not set nor deleted."""
+    blocked_out = property(_get_blocked_out)
 
     def _collision(self, position, rotation, current_grid):
         """Returns True if moving the tetromino to the position and rotation 
