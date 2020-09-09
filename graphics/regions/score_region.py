@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import pygame
-
-from constants.graphics import COLORS, SCORE_FONT_SIZE
+from constants.graphics import SCORE_FONT_SIZE
 from graphics.regions.region import Region
 from graphics import utils
 

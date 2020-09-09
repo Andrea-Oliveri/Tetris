@@ -30,12 +30,12 @@ class Window(Region):
 
     def update(self, **kwargs):
         """Implementation of the update method for the Window."""
-        self._update_kwargs_test(kwargs, ["current_grid", "current_tetromino", "queue", "held", "score", "level", "goal"])
+        self._update_kwargs_test(kwargs, ["current_grid", "current_tetromino", "queue", "held", "score", "level", "goal", "lines"])
         
         self._hold_region.update(held=kwargs["held"])
         self._grid_region.update(current_grid=kwargs["current_grid"], current_tetromino=kwargs["current_tetromino"])
         self._queue_region.update(queue=kwargs["queue"])
-        self._level_region.update(level=kwargs["level"], goal=kwargs["goal"])
+        self._level_region.update(level=kwargs["level"], goal=kwargs["goal"], lines=kwargs["lines"])
         self._score_region.update(score=kwargs["score"])
 
         central_column = utils.merge_surfaces_vertically([self._grid_region.surface, self._score_region.surface])

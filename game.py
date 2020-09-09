@@ -30,6 +30,7 @@ class Game:
         self._score = 0
         self._level = 1
         self._goal = FIXED_GOAL
+        self._lines_cleared = 0
         self._spawn_tetromino()        
         
         pygame.init()
@@ -66,6 +67,7 @@ class Game:
         if self._current_tetromino.lock_counter >= LOCK_DELAY:
             score, lines_cleared = self._grid.lock_down(self._current_tetromino)
             self._score += score
+            self._lines_cleared += lines_cleared
             self._goal -= lines_cleared
             if self._goal <= 0:
                 if self._level < LEVEL_CAP:
@@ -141,7 +143,8 @@ class Game:
                     self._window.update(current_grid=self._grid,
                                 current_tetromino=self._current_tetromino,
                                 queue=self._next_queue, held=self._held_tetromino,
-                                score=self._score, level=self._level, goal=self._goal)
+                                score=self._score, level=self._level, goal=self._goal,
+                                lines=self._lines_cleared)
                     
                 #DEBUG
                 a.tick()
