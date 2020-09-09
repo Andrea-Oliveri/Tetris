@@ -21,6 +21,8 @@ class Game:
         self._random = RandomBag()
         self._sound = SoundEngine()
         
+        self._running = True
+        self._finished = False
         self._swap_allowed = True
         self._keys_down = {}
         
@@ -45,26 +47,26 @@ class Game:
     
     def _spawn_tetromino(self):
         """Gets the next tetromino to be spawned from the random generator, and
-        attenpts spawning it. If coullisions allow it to spawn there, returns True, 
+        attenpts spawning it. If collisions allow it to spawn there, returns True, 
         otherwise returns False (block out)."""
         current_piece, self._next_queue = self._random.next_pieces()
-        self._current_tetromino = PlayableTetromino(current_piece, self._grid)  
-        self._fall_tetromino()
+        self._current_tetromino = PlayableTetromino(current_piece, self._grid)      
 
 
     def _fall_tetromino(self):
         """Calls a method so that tetromino moves down if possible, then 
         checks the lock counter of the tetromino and, if larger than LOCK_DELAY,
-        locks it into place, updates score, goal and level and spawns new tetromino."""
+        locks it into place, updates score, goal, level and lines cleared
+        and spawns new tetromino."""
         if self._keys_down.get(K_SPACE, False):
             self._current_tetromino.move_down(self._grid, self._level, "hard")
         elif self._keys_down.get(K_DOWN, False):
             self._current_tetromino.move_down(self._grid, self._level, "soft")
         else:
             self._current_tetromino.move_down(self._grid, self._level, "normal")        
-        
+                
         if self._current_tetromino.lock_counter >= LOCK_DELAY:
-            score, lines_cleared = self._grid.lock_down(self._current_tetromino)
+            score, lines_cleared, lock_out = self._grid.lock_down(self._current_tetromino)
             self._score += score
             self._lines_cleared += lines_cleared
             self._goal -= lines_cleared
@@ -74,6 +76,10 @@ class Game:
                     self._goal = FIXED_GOAL
                 else:
                     self._goal = 0
+            
+            if lock_out:
+                self._finished = True
+            
             self._spawn_tetromino()
             self._swap_allowed = True
 
@@ -122,17 +128,16 @@ class Game:
 
     def run(self):
         """Runs a complete game."""
-        running = True
         
         # DEBUG:
         a = pygame.time.Clock()
         l = []
         ####################
         
-        while running:
+        while self._running and not self._finished:
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    running = False
+                    self._running = False
                 if event.type == KEYDOWN:
                     self._key_pressed(event.key)
                 elif event.type == KEYUP:

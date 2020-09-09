@@ -16,6 +16,7 @@ class PlayableTetromino(Tetromino):
         """Constructor for the class Tetromino."""
         Tetromino.__init__(self, letter, "DEG_0")
         self._position = [grid.SPAWN_ROW, floor((grid.SIZE["width"]-self._MAPS_SIZE["width"])/2)]
+        self._initial_drop(current_grid)
         self._decimal_drop = 0.
         self._ghost_position = self._compute_ghost_position(current_grid)
         self._lock_counter = 0
@@ -41,7 +42,7 @@ class PlayableTetromino(Tetromino):
         passed as parameter resulted in a collision, False otherwise."""
         for line in range(self.MAPS_SIZE["height"]):
             for col in range(self.MAPS_SIZE["width"]):
-                grid_line = position[0]-line-1
+                grid_line = position[0]-line
                 grid_col = position[1]+col
                 if self._MAPS[rotation][line][col]:
                     if grid_line < 0 or grid_col < 0 or grid_col >= grid.SIZE["width"] or not current_grid.is_empty(grid_line, grid_col):
@@ -64,6 +65,15 @@ class PlayableTetromino(Tetromino):
                 break
         
         return [line, self._position[1]]
+
+    def _initial_drop(self, current_grid):
+        """Function that drops the tetromino one case if collisions allow it.
+        Only called when the tetromino is spawned."""
+        new_position = self.position
+        new_position[0] -= 1
+        
+        if not self._collision(new_position, self._rotation, current_grid):
+            self._position = new_position
 
     def rotate(self, direction, current_grid):
         """Rotates the tetromino in the desired direction ("clockwise" or "anticlockwise")."""

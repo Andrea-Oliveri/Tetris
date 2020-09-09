@@ -45,8 +45,8 @@ class GridRegion(Region):
             for col in range(tetromino.MAPS_SIZE["width"]):
                 if tetromino[line][col]:
                     square_col = tetromino.position[1]+col
-                    square_line = grid.VISIBLE_SIZE["height"]-tetromino.position[0]+line
-                    if square_line >= 0: 
+                    square_line = grid.VISIBLE_SIZE["height"]-1-tetromino.position[0]+line
+                    if square_line >= 0:
                         color = COLORS[tetromino.letter]
                         if ghost:
                             color = [val*GHOST_COLOR_FACTOR for val in color]

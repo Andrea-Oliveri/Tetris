@@ -21,16 +21,22 @@ class Grid:
         return self._grid[line][col] == " "
     
     def lock_down(self, tetromino):
-        """Locks the tetromino in the grid into place. Returns True if the tetromino locked
-        down inside the visible area, False otherwise (Lock Out)."""       
+        """Locks the tetromino in the grid into place.
+        Returns a tuple containing the score obtained with this move, the cleared
+        number of lines and True if the tetromino locked down outside the visible
+        area (Lock Out), False otherwise."""       
+        lock_out = True
+        
         for line in range(tetromino.MAPS_SIZE["height"]):
             for col in range(tetromino.MAPS_SIZE["width"]):
-                grid_line = tetromino.position[0]-line-1
+                grid_line = tetromino.position[0]-line
                 grid_col = tetromino.position[1]+col
                 if tetromino[line][col]:
                     self._grid[grid_line][grid_col] = tetromino.letter
-        
-        return self._clear_lines()
+                    if grid_line < VISIBLE_SIZE["height"]:
+                        lock_out = False
+
+        return (*self._clear_lines(), lock_out)
     
     def _clear_lines(self):
         """Function that clears the complete lines in the grid and returns the obtained score."""
