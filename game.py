@@ -36,7 +36,6 @@ class Game:
         pygame.init()
         pygame.time.set_timer(FRAME_EVENT, REFRESH_PERIOD)
         pygame.key.set_repeat(DAS_DELAY, DAS_RATE)
-
         
         
     def __del__(self):
@@ -141,10 +140,10 @@ class Game:
                 elif event.type == FRAME_EVENT:
                     self._fall_tetromino()
                     self._window.update(current_grid=self._grid,
-                                current_tetromino=self._current_tetromino,
-                                queue=self._next_queue, held=self._held_tetromino,
-                                score=self._score, level=self._level, goal=self._goal,
-                                lines=self._lines_cleared)
+                                        current_tetromino=self._current_tetromino,
+                                        queue=self._next_queue, held=self._held_tetromino,
+                                        score=self._score, level=self._level,
+                                        goal=self._goal, lines=self._lines_cleared)
                     
                 #DEBUG
                 a.tick()

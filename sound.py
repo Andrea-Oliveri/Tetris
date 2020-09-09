@@ -11,6 +11,7 @@ class SoundEngine:
 
     def __init__(self):
         """Constructor for the class SoundEngine."""
+        pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
         pygame.mixer.init()
         
         self._musics_library = [MUSICS_DIRECTORY+name for name in os.listdir(MUSICS_DIRECTORY)]
