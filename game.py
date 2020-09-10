@@ -81,9 +81,9 @@ class Game:
             
             if lock_out:
                 self._topped_out = True
-            
-            self._spawn_tetromino()
-            self._swap_allowed = True
+            else:
+                self._spawn_tetromino()
+                self._swap_allowed = True
 
     
     def _swap_held_tetromino(self):
@@ -136,10 +136,12 @@ class Game:
         l = []
         ####################
         
-        while self._running and not self._topped_out:
+        window_open = True
+        
+        while self._running and not self._topped_out and window_open:
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    self._running = False
+                    window_open = False
                 if event.type == KEYDOWN:
                     self._key_pressed(event.key)
                 elif event.type == KEYUP:
@@ -151,12 +153,24 @@ class Game:
                                         queue=self._next_queue, held=self._held_tetromino,
                                         score=self._score, level=self._level,
                                         goal=self._goal, lines=self._lines_cleared)
-                    
+        
                 #DEBUG
                 a.tick()
                 l.append(a.get_fps())
                 #print(a.get_fps())
                 ###################
+        
+        while window_open:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    window_open = False
+                elif event.type == FRAME_EVENT:
+                    self._window.update(current_grid=self._grid,
+                                        current_tetromino=self._current_tetromino,
+                                        queue=self._next_queue, held=self._held_tetromino,
+                                        score=self._score, level=self._level,
+                                        goal=self._goal, lines=self._lines_cleared)
+                    
         
         # DEBUG:
         l = [val for val in l if val != 0]
