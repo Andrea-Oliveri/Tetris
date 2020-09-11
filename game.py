@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pygame
-from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_r, K_SPACE, K_LEFT, K_RIGHT, K_UP, K_DOWN, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL
+from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_r, K_SPACE, K_LEFT, K_RIGHT, K_UP, K_DOWN, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL, K_ESCAPE, K_F1
 
 from constants.game import REFRESH_PERIOD, FRAME_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY, FIXED_GOAL, LEVEL_CAP
 from grid import Grid
@@ -57,10 +57,13 @@ class Game:
 
 
     def _fall_tetromino(self):
-        """Calls a method so that tetromino moves down if possible, then 
-        checks the lock counter of the tetromino and, if larger than LOCK_DELAY,
-        locks it into place, updates score, goal, level and lines cleared
-        and spawns new tetromino."""
+        """If the game is running, calls a method so that tetromino moves down
+        if possible, then checks the lock counter of the tetromino and, if
+        larger than LOCK_DELAY, locks it into place, updates score, goal,
+        level and lines cleared and spawns new tetromino."""
+        if not self._running:
+            return 
+        
         if self._keys_down.get(K_SPACE, False):
             self._current_tetromino.move_down(self._grid, self._level, "hard")
         elif self._keys_down.get(K_DOWN, False):
@@ -104,24 +107,26 @@ class Game:
     
     def _key_pressed(self, key):
         """Reacts to key being pressed, except if it is being held (with the
-        only exception of right and left arrow). Updates self._keys_down to
-        say key is being pressed."""
+        only exception of right and left arrow) and, depending on the key,
+        if the game is paused. Updates self._keys_down to say key is being pressed."""
         key_held = self._keys_down.get(key, False)
         self._keys_down[key] = True
         
-        if key == K_LEFT:
+        if key == K_LEFT and self._running:
             self._current_tetromino.move_sideways("left", self._grid)
-        elif key == K_RIGHT:
+        elif key == K_RIGHT and self._running:
             self._current_tetromino.move_sideways("right", self._grid)
         elif not key_held:
-            if key == K_c or key == K_LSHIFT or key == K_RSHIFT:
+            if (key == K_c or key == K_LSHIFT or key == K_RSHIFT) and self._running:
                 self._swap_held_tetromino()
-            elif key == K_x or key == K_UP:
+            elif (key == K_x or key == K_UP) and self._running:
                 self._current_tetromino.rotate("clockwise", self._grid)
-            elif key == K_z or key == K_LCTRL or key == K_RCTRL:
+            elif (key == K_z or key == K_LCTRL or key == K_RCTRL) and self._running:
                 self._current_tetromino.rotate("anticlockwise", self._grid)
             elif key == K_r:
                 self._sound.change_music()
+            elif key == K_ESCAPE or key == K_F1:
+                self._running = not self._running
                 
         
     def _key_released(self, key):
@@ -140,11 +145,10 @@ class Game:
         
         window_open = True
         
-        while self._running and not self._topped_out:
+        while not self._topped_out and window_open:
             frame_updated = False
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    self._running = False
                     window_open = False
                 if event.type == KEYDOWN:
                     self._key_pressed(event.key)
@@ -200,8 +204,5 @@ class Game:
         string += "    Number measures: {}\n\n\n".format(len(update_time))
         print(string)
         plt.hist(l, 100)
-        
-        with open("times.txt", "a") as file:
-            file.write(string)
         ####################
 
