@@ -32,18 +32,19 @@ def draw_outside_tetromino(tetromino, square_size_pixels):
 def draw_text(message, font_size):
     """Function that returns a pygame.Surface containing the rendered text 
     with message and size passed as parameters."""
-    return pygame.font.SysFont(FONT, font_size).render(message, True, COLORS["text"])
+    return pygame.font.SysFont(FONT, font_size).render(message, True, COLORS["text"], COLORS["background"])
                 
-            
+
 def merge_surfaces_horizontally(surfaces):
     """Returns a surfaces in which all surfaces passed as parameter are stacked horizontally
     and aligned on top."""
+
     merged_surface_size = {"width": sum([surface.get_width() for surface in surfaces])+(len(surfaces)-1)*ELEMENTS_MARGIN_PIXELS,
                            "height": max([surface.get_height() for surface in surfaces])}
-    
+
     merged_surface = pygame.Surface((merged_surface_size["width"], merged_surface_size["height"]))
     merged_surface.fill(COLORS["background"])
-
+    
     current_width = 0
     for surface in surfaces:
         merged_surface.blit(surface, (current_width, 0))
@@ -57,7 +58,8 @@ def merge_surfaces_vertically(surfaces, center=True, total_height=None):
     and either centered or aligned left depending on the center parameter. If a total_height
     is specified, final surface will have that height (no guarantee that everything will fit),
     otherwise final surface will have smallest height to fit everything."""
-        
+       
+
     merged_surface_size = {"width": max([surface.get_width() for surface in surfaces]),
                            "height": sum([surface.get_height() for surface in surfaces])+(len(surfaces)-1)*ELEMENTS_MARGIN_PIXELS}
     
@@ -75,7 +77,5 @@ def merge_surfaces_vertically(surfaces, center=True, total_height=None):
             merged_surface.blit(surface, ((0, current_height)))
                                 
         current_height += surface.get_height() + ELEMENTS_MARGIN_PIXELS
-    
+
     return merged_surface
-
-

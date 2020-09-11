@@ -28,24 +28,25 @@ class Window(Region):
         
         Region.__init__(self)
 
+
     def update(self, **kwargs):
         """Implementation of the update method for the Window."""
         self._update_kwargs_test(kwargs, ["current_grid", "current_tetromino", "queue", "held", "score", "level", "goal", "lines"])
-        
+
         self._hold_region.update(held=kwargs["held"])
         self._grid_region.update(current_grid=kwargs["current_grid"], current_tetromino=kwargs["current_tetromino"])
         self._queue_region.update(queue=kwargs["queue"])
         self._level_region.update(level=kwargs["level"], goal=kwargs["goal"], lines=kwargs["lines"])
         self._score_region.update(score=kwargs["score"])
-
+        
         central_column = utils.merge_surfaces_vertically([self._grid_region.surface, self._score_region.surface])
         right_column = utils.merge_surfaces_vertically([self._queue_region.surface, self._level_region.surface], False)
         
         self._surface = utils.merge_surfaces_horizontally([self._hold_region.surface, central_column, right_column])
+        
         self._screen.fill(COLORS["background"])
         self._screen.blit(self._surface, ((self._screen.get_width()-self._surface.get_width())/2,
                                           (self._screen.get_height()-self._surface.get_height())/2))        
         pygame.display.update()
-    
     
    

@@ -16,6 +16,8 @@ class Game:
 
     def __init__(self):
         """Constructor for the class Game."""        
+        pygame.init()
+        
         self._grid = Grid()
         self._window = Window()
         self._random = RandomBag()
@@ -35,7 +37,6 @@ class Game:
         self._lines_cleared = 0
         self._spawn_tetromino()        
         
-        pygame.init()
         pygame.time.set_timer(FRAME_EVENT, REFRESH_PERIOD)
         pygame.key.set_repeat(DAS_DELAY, DAS_RATE)
         
@@ -134,13 +135,16 @@ class Game:
         # DEBUG:
         a = pygame.time.Clock()
         l = []
+        update_time = []
         ####################
         
         window_open = True
         
-        while self._running and not self._topped_out and window_open:
+        while self._running and not self._topped_out:
+            frame_updated = False
             for event in pygame.event.get():
                 if event.type == QUIT:
+                    self._running = False
                     window_open = False
                 if event.type == KEYDOWN:
                     self._key_pressed(event.key)
@@ -148,34 +152,56 @@ class Game:
                     self._key_released(event.key) 
                 elif event.type == FRAME_EVENT:
                     self._fall_tetromino()
-                    self._window.update(current_grid=self._grid,
-                                        current_tetromino=self._current_tetromino,
-                                        queue=self._next_queue, held=self._held_tetromino,
-                                        score=self._score, level=self._level,
-                                        goal=self._goal, lines=self._lines_cleared)
+                    if not frame_updated:
+                        #DEBUG
+                        c = pygame.time.Clock()
+                        c.tick()
+                        ###########
+                        self._window.update(current_grid=self._grid,
+                                            current_tetromino=self._current_tetromino,
+                                            queue=self._next_queue, held=self._held_tetromino,
+                                            score=self._score, level=self._level,
+                                            goal=self._goal, lines=self._lines_cleared)
+                        #DEBUG
+                        update_time.append(c.tick())
+                        ###########
+                        frame_updated = True
+                    
         
                 #DEBUG
-                a.tick()
-                l.append(a.get_fps())
-                #print(a.get_fps())
+                l.append(a.tick())
                 ###################
         
         while window_open:
+            frame_updated = False
             for event in pygame.event.get():
                 if event.type == QUIT:
                     window_open = False
-                elif event.type == FRAME_EVENT:
+                elif event.type == FRAME_EVENT and not frame_updated:
                     self._window.update(current_grid=self._grid,
                                         current_tetromino=self._current_tetromino,
                                         queue=self._next_queue, held=self._held_tetromino,
                                         score=self._score, level=self._level,
                                         goal=self._goal, lines=self._lines_cleared)
+                    frame_updated = True
                     
         
-        # DEBUG:
-        l = [val for val in l if val != 0]
-        print("Min: {}".format(min(l)))
-        print("Max: {}".format(max(l)))
-        print("Mean: {}".format(sum(l)/len(l)))
+        # DEBUG:    
+        import matplotlib.pyplot as plt
+        string = "Total:\n"
+        string += "    Min: {}\n".format(min(l))
+        string += "    Max: {} ({})\n".format(max(l), len([1 for e in l if e == max(l)]))
+        string += "    Mean: {}\n".format(sum(l)/len(l))
+        string += "    Number measures: {}\n".format(len(l))
+        string += "Update Time:\n"
+        string += "    Min: {}\n".format(min(update_time))
+        string += "    Max: {} ({})\n".format(max(update_time), len([1 for e in update_time if e == max(update_time)]))
+        string += "    Mean: {}\n".format(sum(update_time)/len(update_time))
+        string += "    Number measures: {}\n\n\n".format(len(update_time))
+        print(string)
+        plt.hist(l, 100)
+        
+        with open("times.txt", "a") as file:
+            file.write(string)
         ####################
 

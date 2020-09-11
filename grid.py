@@ -53,10 +53,4 @@ class Grid:
             self._grid.append([" " for _ in range(SIZE["width"])])
         
         return score, len(lines_cleared)
-
-    # DEBUG:
-    def __repr__(self):
-        lines = [",".join(line) for line in self._grid[::-1]]
-        lines = [str(39-i) + "   " + line for i, line in enumerate(lines)]
-        return "\n".join(lines)
             

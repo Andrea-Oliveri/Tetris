@@ -11,10 +11,11 @@ class GridRegion(Region):
     """Class GridRegion. Class representing the region of the window where the grid is displayed."""
         
     def __init__(self):
+        """Overload of constructor for GridRegion class."""
         GRID_SIZE_PIXELS = {"width": grid.VISIBLE_SIZE["width"]*GRID_SQUARE_SIZE_PIXELS,
                             "height": grid.VISIBLE_SIZE["height"]*GRID_SQUARE_SIZE_PIXELS}
         self._surface = pygame.Surface((GRID_SIZE_PIXELS["width"], GRID_SIZE_PIXELS["height"]))
-
+        
     
     def update(self, **kwargs):
         """Implementation of the update method for the HoldRegion."""
