@@ -8,7 +8,8 @@ from constants.tetromino import MAPS
 
 def draw_outside_tetromino(tetromino, square_size_pixels):
     """Function that returns a pygame.Surface containing the tetromino passed
-    as parameter and using the square size passed as parameter."""
+    as parameter and using the square size passed as parameter.
+    Only draws non-ghost tetrominos, vertically centered and at DEG_0 rotation."""
     tetromino_map = MAPS[tetromino]["DEG_0"]
     tetromino_size = {"width": len(tetromino_map[0]), "height": 2}
 
