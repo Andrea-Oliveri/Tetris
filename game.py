@@ -64,8 +64,6 @@ class Game:
         if not self._running:
             return 
         
-        self._window.notify_event("movement")
-        
         if self._keys_down.get(K_SPACE, False):
             self._current_tetromino.move_down(self._grid, self._level, "hard")
         elif self._keys_down.get(K_DOWN, False):
@@ -84,9 +82,6 @@ class Game:
                     self._goal = FIXED_GOAL
                 else:
                     self._goal = 0
-            
-            self._window.notify_event("lines_cleared")
-            self._window.notify_event("score_increased")
             
             if lock_out:
                 self._topped_out = True
@@ -119,20 +114,15 @@ class Game:
         
         if key == K_LEFT and self._running:
             self._current_tetromino.move_sideways("left", self._grid)
-            self._window.notify_event("movement")
         elif key == K_RIGHT and self._running:
             self._current_tetromino.move_sideways("right", self._grid)
-            self._window.notify_event("movement")
         elif not key_held:
             if (key == K_c or key == K_LSHIFT or key == K_RSHIFT) and self._running:
                 self._swap_held_tetromino()
-                self._window.notify_event("held_swap")
             elif (key == K_x or key == K_UP) and self._running:
                 self._current_tetromino.rotate("clockwise", self._grid)
-                self._window.notify_event("movement")
             elif (key == K_z or key == K_LCTRL or key == K_RCTRL) and self._running:
                 self._current_tetromino.rotate("anticlockwise", self._grid)
-                self._window.notify_event("movement")
             elif key == K_r:
                 self._sound.change_music()
             elif key == K_ESCAPE or key == K_F1:
