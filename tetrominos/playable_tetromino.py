@@ -152,6 +152,8 @@ class PlayableTetromino(Tetromino):
         else:
             raise TypeError("PlayableTetromino.move_down() parameter drop_type must be either normal, soft or hard")
         
+        old_line_position = self.position[0]
+        
         total_decimal_drop = self._decimal_drop + gravity
         integer_drop = int(total_decimal_drop)
         self._decimal_drop = total_decimal_drop - integer_drop
@@ -173,4 +175,6 @@ class PlayableTetromino(Tetromino):
                 
             self._lock_counter = 0
         
+        return old_line_position - self.position[0]
+
     

@@ -9,7 +9,7 @@ class Grid:
     
     def __init__(self):
         """Constructor for the class Grid."""
-        self._grid = [[" " for _ in range(SIZE["width"])] for _ in range(SIZE["height"])]
+        self._grid = [[" " for _ in range(SIZE["width"])] for _ in range(SIZE["height"])]        
 
     def __getitem__(self, index):
         """Special function that allows to get items of attribute _grid from the exterior."""
@@ -20,11 +20,11 @@ class Grid:
         False otherwise."""
         return self._grid[line][col] == " "
     
-    def lock_down(self, tetromino):
+    def lock_down(self, tetromino, level, score_keeper):
         """Locks the tetromino in the grid into place.
-        Returns a tuple containing the score obtained with this move, the cleared
-        number of lines and True if the tetromino locked down outside the visible
-        area (Lock Out), False otherwise."""       
+        Calls methods of score_keeper to add score obtained with this move, returns
+        the cleared number of lines and True if the tetromino locked down outside 
+        the visible area (Lock Out), False otherwise."""       
         lock_out = True
         
         for line in range(tetromino.MAPS_SIZE["height"]):
@@ -35,22 +35,42 @@ class Grid:
                     self._grid[grid_line][grid_col] = tetromino.letter
                     if grid_line < VISIBLE_SIZE["height"]:
                         lock_out = False
-
-        return (*self._clear_lines(), lock_out)
+                        
+        lines_cleared = self._clear_lines()
+        
+        
+        
+        
+        # TODO: DETECT TSPINS ETC., THEN CALL METHOD TO UPDATE SCORE
+        
+        
+        
+        
+        
+        
+        
+        
+        if self._all_empty():
+            score_keeper.add_perfect_bonus_to_score(lines_cleared, level)
+        
+        return lines_cleared, lock_out
+    
     
     def _clear_lines(self):
         """Function that clears the complete lines in the grid and returns the obtained score."""
-        score = 0
         lines_cleared = []
         
         for line in range(SIZE["height"]):
             if all([not self.is_empty(line, col) for col in range(SIZE["width"])]):
                 lines_cleared.append(line)
-                score += 1 
         
         for line in sorted(lines_cleared, reverse=True):
             del self._grid[line]
             self._grid.append([" " for _ in range(SIZE["width"])])
         
-        return score, len(lines_cleared)
+        return len(lines_cleared)
             
+    
+    def _all_empty(self):
+        """Function that returns True if the whole grid is empty, False otherwise."""
+        return all([self.is_empty(0, col) for col in range(SIZE["width"])])

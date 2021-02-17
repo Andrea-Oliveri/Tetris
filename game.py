@@ -9,6 +9,7 @@ from graphics.graphics import Window
 from random_bag import RandomBag
 from tetrominos.playable_tetromino import PlayableTetromino
 from sound import SoundEngine
+from score import Score
 
 
 class Game:
@@ -22,6 +23,7 @@ class Game:
         self._window = Window()
         self._random = RandomBag()
         self._sound = SoundEngine()
+        self._score_keeper = Score()
         
         self._running = True
         self._topped_out = False
@@ -31,7 +33,6 @@ class Game:
         self._held_tetromino = None
         self._next_queue = None
         self._current_tetromino = None
-        self._score = 0
         self._level = 1
         self._goal = FIXED_GOAL
         self._lines_cleared = 0
@@ -65,15 +66,16 @@ class Game:
             return 
         
         if self._keys_down.get(K_SPACE, False):
-            self._current_tetromino.move_down(self._grid, self._level, "hard")
+            n_lines_dropped = self._current_tetromino.move_down(self._grid, self._level, "hard")
+            self._score_keeper.add_to_score("hard_drop", {"n_lines": n_lines_dropped})
         elif self._keys_down.get(K_DOWN, False):
-            self._current_tetromino.move_down(self._grid, self._level, "soft")
+            n_lines_dropped = self._current_tetromino.move_down(self._grid, self._level, "soft")
+            self._score_keeper.add_to_score("soft_drop", {"n_lines": n_lines_dropped})
         else:
             self._current_tetromino.move_down(self._grid, self._level, "normal")        
                 
         if self._current_tetromino.lock_counter >= LOCK_DELAY:
-            score, lines_cleared, lock_out = self._grid.lock_down(self._current_tetromino)
-            self._score += score
+            lines_cleared, lock_out = self._grid.lock_down(self._current_tetromino, self._level, self._score_keeper)
             self._lines_cleared += lines_cleared
             self._goal -= lines_cleared
             if self._goal <= 0:
@@ -164,7 +166,7 @@ class Game:
                         self._window.update(current_grid=self._grid,
                                             current_tetromino=self._current_tetromino,
                                             queue=self._next_queue, held=self._held_tetromino,
-                                            score=self._score, level=self._level,
+                                            score=self._score_keeper._score, level=self._level,
                                             goal=self._goal, lines=self._lines_cleared)
                         #DEBUG
                         update_time.append(c.tick())
@@ -185,7 +187,7 @@ class Game:
                     self._window.update(current_grid=self._grid,
                                         current_tetromino=self._current_tetromino,
                                         queue=self._next_queue, held=self._held_tetromino,
-                                        score=self._score, level=self._level,
+                                        score=self._score_keeper._score, level=self._level,
                                         goal=self._goal, lines=self._lines_cleared)
                     frame_updated = True
                     
