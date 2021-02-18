@@ -25,6 +25,7 @@ class PlayableTetromino(Tetromino):
         self._decimal_drop = 0.
         self._ghost_position = self._compute_ghost_position(current_grid)
         self._lock_counter = 0
+        self._last_movement_is_rotation = False
         
     def _get_lock_counter(self):
         """Special function that allows to get the attribute _lock_counter from the exterior."""
@@ -113,6 +114,7 @@ class PlayableTetromino(Tetromino):
         if self._letter == "O":
             self._rotation = new_rotation
             self._lock_counter = 0
+            self._last_movement_is_rotation = True 
             return
     
         for delta_position in ROTATION_TESTS[self._letter][(self._rotation, new_rotation)]:
@@ -122,6 +124,7 @@ class PlayableTetromino(Tetromino):
                 self._rotation = new_rotation
                 self._ghost_position = self._compute_ghost_position(current_grid)
                 self._lock_counter = 0
+                self._last_movement_is_rotation = True 
                 break
     
     def move_sideways(self, direction, current_grid):
@@ -137,6 +140,7 @@ class PlayableTetromino(Tetromino):
             self._position = new_position
             self._ghost_position = self._compute_ghost_position(current_grid)
             self._lock_counter = 0
+            self._last_movement_is_rotation = False
     
     def move_down(self, current_grid, level, drop_type="normal"):
         """Moves the tetromino down if collisions allow it.
@@ -168,6 +172,7 @@ class PlayableTetromino(Tetromino):
                 
                 if not self._collision(new_position, self._rotation, current_grid):
                     self._position = new_position
+                    self._last_movement_is_rotation = False
                 else:
                     dropping = False
                     
@@ -176,5 +181,18 @@ class PlayableTetromino(Tetromino):
             self._lock_counter = 0
         
         return old_line_position - self.position[0]
-
     
+    def detect_3_corner_T_spin(self, current_grid):
+        """Returns True if the tetromino is a T, last movement was rotation and
+        center piece of T has 3 diagonally adjacent blocks."""
+        
+        if not (self._letter == "T" and self._last_movement_is_rotation):
+            return False
+        
+        n_filled_corners = 4
+        for relative_line in (0, 2):
+            for relative_col in (0, 2):
+                if current_grid.is_empty(self._position[0] - relative_line, self._position[1] + relative_col):
+                    n_filled_corners -= 1
+        
+        return n_filled_corners >= 3

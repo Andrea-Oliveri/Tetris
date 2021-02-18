@@ -9,7 +9,11 @@ class Grid:
     
     def __init__(self):
         """Constructor for the class Grid."""
-        self._grid = [[" " for _ in range(SIZE["width"])] for _ in range(SIZE["height"])]        
+        self._grid = [[" " for _ in range(SIZE["width"])] for _ in range(SIZE["height"])] 
+        self._grid[0] = ["O","O","O","O"," ","O","O","O","O","O"]
+        self._grid[1] = ["O","O","O"," "," "," ","O","O","O","O"]
+        self._grid[2] = [" "," "," "," "," ","O","O"," "," "," "]
+
 
     def __getitem__(self, index):
         """Special function that allows to get items of attribute _grid from the exterior."""
@@ -18,6 +22,9 @@ class Grid:
     def is_empty(self, line, col):
         """Function that returns True if the case described by indeces parameter is empty,
         False otherwise."""
+        if line < 0 or line >= SIZE["height"] or col < 0 or col >= SIZE["width"]:
+            return False
+        
         return self._grid[line][col] == " "
     
     def lock_down(self, tetromino, level, score_keeper):
@@ -35,23 +42,22 @@ class Grid:
                     self._grid[grid_line][grid_col] = tetromino.letter
                     if grid_line < VISIBLE_SIZE["height"]:
                         lock_out = False
-                        
+                
+        reward_tspin = tetromino.detect_3_corner_T_spin(self)
         lines_cleared = self._clear_lines()
         
+        if lines_cleared:
+            score_actions = {(1, False): "single", (2, False): "double", 
+                             (3, False): "triple", (4, False): "tetris",
+                             (1, True): "tspin_single", (2, True): "tspin_double", 
+                             (3, True): "tspin_triple", (4, True): "tspin_tetris"}
+            
+            action = score_actions[lines_cleared, reward_tspin]
+                        
+            score_keeper.add_to_score(action, {"level": level})
         
-        
-        
-        # TODO: DETECT TSPINS ETC., THEN CALL METHOD TO UPDATE SCORE
-        
-        
-        
-        
-        
-        
-        
-        
-        if self._all_empty():
-            score_keeper.add_perfect_bonus_to_score(lines_cleared, level)
+            if self._all_empty():
+                score_keeper.add_perfect_bonus_to_score(lines_cleared, level)       
         
         return lines_cleared, lock_out
     

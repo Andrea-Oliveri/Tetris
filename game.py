@@ -166,7 +166,7 @@ class Game:
                         self._window.update(current_grid=self._grid,
                                             current_tetromino=self._current_tetromino,
                                             queue=self._next_queue, held=self._held_tetromino,
-                                            score=self._score_keeper._score, level=self._level,
+                                            score=self._score_keeper.score, level=self._level,
                                             goal=self._goal, lines=self._lines_cleared)
                         #DEBUG
                         update_time.append(c.tick())
@@ -187,7 +187,7 @@ class Game:
                     self._window.update(current_grid=self._grid,
                                         current_tetromino=self._current_tetromino,
                                         queue=self._next_queue, held=self._held_tetromino,
-                                        score=self._score_keeper._score, level=self._level,
+                                        score=self._score_keeper.score, level=self._level,
                                         goal=self._goal, lines=self._lines_cleared)
                     frame_updated = True
                     
