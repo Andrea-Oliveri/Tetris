@@ -10,10 +10,6 @@ class Grid:
     def __init__(self):
         """Constructor for the class Grid."""
         self._grid = [[" " for _ in range(SIZE["width"])] for _ in range(SIZE["height"])] 
-        self._grid[0] = ["O","O","O","O"," ","O","O","O","O","O"]
-        self._grid[1] = ["O","O","O"," "," "," ","O","O","O","O"]
-        self._grid[2] = [" "," "," "," "," ","O","O"," "," "," "]
-
 
     def __getitem__(self, index):
         """Special function that allows to get items of attribute _grid from the exterior."""
