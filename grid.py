@@ -43,17 +43,20 @@ class Grid:
         lines_cleared = self._clear_lines()
         
         if lines_cleared:
-            score_actions = {(1, False): "single", (2, False): "double", 
-                             (3, False): "triple", (4, False): "tetris",
-                             (1, True): "tspin_single", (2, True): "tspin_double", 
-                             (3, True): "tspin_triple", (4, True): "tspin_tetris"}
+            score_lines_cleared_actions = {(1, False): "single", (2, False): "double", 
+                                           (3, False): "triple", (4, False): "tetris",
+                                           (1, True): "tspin_single", (2, True): "tspin_double", 
+                                           (3, True): "tspin_triple", (4, True): "tspin_tetris"}
             
-            action = score_actions[lines_cleared, reward_tspin]
+            action = score_lines_cleared_actions[lines_cleared, reward_tspin]
                         
             score_keeper.add_to_score(action, {"level": level})
         
             if self._all_empty():
-                score_keeper.add_perfect_bonus_to_score(lines_cleared, level)       
+                score_keeper.add_perfect_bonus_to_score(lines_cleared, level)
+                
+        elif reward_tspin:
+            score_keeper.add_to_score("tspin_no_lines", {"level": level})
         
         return lines_cleared, lock_out
     
