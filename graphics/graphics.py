@@ -8,6 +8,7 @@ from graphics.regions.region import Region
 from graphics.regions.hold_region import HoldRegion
 from graphics.regions.grid_region import GridRegion
 from graphics.regions.queue_region import QueueRegion
+from graphics.regions.fps_region import FPSRegion
 from graphics.regions.level_region import LevelRegion
 from graphics.regions.score_region import ScoreRegion
 
@@ -23,6 +24,7 @@ class Window(Region):
         self._hold_region = HoldRegion()
         self._grid_region = GridRegion()
         self._queue_region = QueueRegion()
+        self._fps_region   = FPSRegion()
         self._level_region = LevelRegion()
         self._score_region = ScoreRegion()
         
@@ -31,7 +33,7 @@ class Window(Region):
 
     def update(self, **kwargs):
         """Implementation of the update method for the Window."""
-        self._update_kwargs_test(kwargs, ["current_grid", "current_tetromino", "queue", "held", "score", "level", "goal", "lines"])
+        self._update_kwargs_test(kwargs, ["current_grid", "current_tetromino", "queue", "held", "score", "level", "goal", "lines", "fps", "show_fps"])
 
         self._hold_region.update(held=kwargs["held"])
         self._grid_region.update(current_grid=kwargs["current_grid"], current_tetromino=kwargs["current_tetromino"])
@@ -39,9 +41,14 @@ class Window(Region):
         self._level_region.update(level=kwargs["level"], goal=kwargs["goal"], lines=kwargs["lines"])
         self._score_region.update(score=kwargs["score"])
         
+        surfaces_right_column = [self._queue_region.surface, self._level_region.surface]
+        if kwargs["show_fps"]:
+            self._fps_region.update(fps=kwargs["fps"])
+            surfaces_right_column.append(self._fps_region.surface)
+
+        right_column = utils.merge_surfaces_vertically(surfaces_right_column, False)
         central_column = utils.merge_surfaces_vertically([self._grid_region.surface, self._score_region.surface])
-        right_column = utils.merge_surfaces_vertically([self._queue_region.surface, self._level_region.surface], False)
-        
+
         self._surface = utils.merge_surfaces_horizontally([self._hold_region.surface, central_column, right_column])
         
         self._screen.fill(COLORS["background"])

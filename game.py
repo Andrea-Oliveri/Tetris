@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pygame
-from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_r, K_SPACE, K_LEFT, K_RIGHT, K_UP, K_DOWN, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL, K_ESCAPE, K_F1
+from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_r, K_SPACE, K_LEFT, K_RIGHT, K_UP, K_DOWN, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL, K_ESCAPE, K_F1, K_F2
 
 from constants.game import REFRESH_PERIOD, FRAME_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY, FIXED_GOAL, LEVEL_CAP
 from grid import Grid
@@ -28,6 +28,7 @@ class Game:
         self._running = True
         self._topped_out = False
         self._swap_allowed = True
+        self._show_fps_counter = False
         self._keys_down = {}
         
         self._held_tetromino = None
@@ -129,6 +130,8 @@ class Game:
                 self._sound.change_music()
             elif key == K_ESCAPE or key == K_F1:
                 self._running = not self._running
+            elif key == K_F2:
+                self._show_fps_counter = not self._show_fps_counter
                 
         
     def _key_released(self, key):
@@ -139,16 +142,19 @@ class Game:
     def run(self):
         """Runs a complete game."""
         
-        # DEBUG:
-        a = pygame.time.Clock()
-        l = []
-        update_time = []
-        ####################
+        # Variable used to count the fps at which game is being updates.
+        fps_counter_clock = pygame.time.Clock()
         
+        # Variable used to describe if the window was closed or not.
         window_open = True
         
+        # Variable needed to prevent redrawing the screen multiple times
+        # in one while loop iteration in case FRAME_EVENTS accumulated due
+        # to slow hardware.
+        frame_updated = False
+        
         while not self._topped_out and window_open:
-            frame_updated = False
+            frame_updated = False            
             for event in pygame.event.get():
                 if event.type == QUIT:
                     window_open = False
@@ -158,25 +164,18 @@ class Game:
                     self._key_released(event.key) 
                 elif event.type == FRAME_EVENT:
                     self._fall_tetromino()
-                    if not frame_updated:
-                        #DEBUG
-                        c = pygame.time.Clock()
-                        c.tick()
-                        ###########
+                    if not frame_updated:                        
+                        fps_counter_clock.tick()
+                        
                         self._window.update(current_grid=self._grid,
                                             current_tetromino=self._current_tetromino,
                                             queue=self._next_queue, held=self._held_tetromino,
                                             score=self._score_keeper.score, level=self._level,
-                                            goal=self._goal, lines=self._lines_cleared)
-                        #DEBUG
-                        update_time.append(c.tick())
-                        ###########
+                                            goal=self._goal, lines=self._lines_cleared,
+                                            fps=fps_counter_clock.get_fps(), show_fps=self._show_fps_counter)
+                                                
                         frame_updated = True
                     
-        
-                #DEBUG
-                l.append(a.tick())
-                ###################
         
         while window_open:
             frame_updated = False
@@ -184,27 +183,13 @@ class Game:
                 if event.type == QUIT:
                     window_open = False
                 elif event.type == FRAME_EVENT and not frame_updated:
+                    fps_counter_clock.tick()
+                    
                     self._window.update(current_grid=self._grid,
                                         current_tetromino=self._current_tetromino,
                                         queue=self._next_queue, held=self._held_tetromino,
                                         score=self._score_keeper.score, level=self._level,
-                                        goal=self._goal, lines=self._lines_cleared)
+                                        goal=self._goal, lines=self._lines_cleared,
+                                        fps=fps_counter_clock.get_fps(), show_fps=self._show_fps_counter)
                     frame_updated = True
-                    
-        
-        # DEBUG:    
-        import matplotlib.pyplot as plt
-        string = "Total:\n"
-        string += "    Min: {}\n".format(min(l))
-        string += "    Max: {} ({})\n".format(max(l), len([1 for e in l if e == max(l)]))
-        string += "    Mean: {}\n".format(sum(l)/len(l))
-        string += "    Number measures: {}\n".format(len(l))
-        string += "Update Time:\n"
-        string += "    Min: {}\n".format(min(update_time))
-        string += "    Max: {} ({})\n".format(max(update_time), len([1 for e in update_time if e == max(update_time)]))
-        string += "    Mean: {}\n".format(sum(update_time)/len(update_time))
-        string += "    Number measures: {}\n\n\n".format(len(update_time))
-        print(string)
-        plt.hist(l, 100)
-        ####################
 

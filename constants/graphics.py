@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
 # Constants defining the sizes in pixels of several graphical elements. 
-WINDOW_SIZE = (550,650)
+WINDOW_SIZE = (550, 650)
 HOLD_SQUARE_SIZE_PIXELS = 20
 GRID_SQUARE_SIZE_PIXELS = 30
 QUEUE_SQUARE_SIZE_PIXELS = HOLD_SQUARE_SIZE_PIXELS
 ELEMENTS_MARGIN_PIXELS = 8
+QUEUE_SURFACE_HEIGHT = 300
+LEVEL_SURFACE_HEIGHT = 200
+
 
 # Constants defining the width in pixels of several graphical elements.
 GRID_EXTERNAL_LINE_WIDTH_PIXELS = 3
@@ -23,5 +26,6 @@ FONT = "comicsansms"
 # Constants storing the size of fonts used by several graphical elements. 
 HOLD_FONT_SIZE = 20
 QUEUE_FONT_SIZE = 20
+FPS_FONT_SIZE   = 20
 LEVEL_FONT_SIZE = 20
 SCORE_FONT_SIZE = 25

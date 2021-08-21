@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from constants.graphics import QUEUE_SQUARE_SIZE_PIXELS, QUEUE_FONT_SIZE
+from constants.graphics import QUEUE_SQUARE_SIZE_PIXELS, QUEUE_FONT_SIZE, QUEUE_SURFACE_HEIGHT
 from constants.random_bag import QUEUE_LENGTH
 from graphics.regions.region import Region
 from graphics import utils
@@ -30,4 +30,4 @@ class QueueRegion(Region):
         queue = kwargs["queue"]
     
         pieces = [utils.draw_outside_tetromino(piece, QUEUE_SQUARE_SIZE_PIXELS) for piece in queue]
-        self._surface = utils.merge_surfaces_vertically([self._text, *pieces], total_height=15*QUEUE_SQUARE_SIZE_PIXELS)
+        self._surface = utils.merge_surfaces_vertically([self._text, *pieces], total_height = QUEUE_SURFACE_HEIGHT)
