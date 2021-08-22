@@ -5,24 +5,23 @@ from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_r, K_SPACE, K_L
 
 from constants.game import REFRESH_PERIOD, FRAME_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY, FIXED_GOAL, LEVEL_CAP
 from grid import Grid
-from graphics.graphics import Window
 from random_bag import RandomBag
 from tetrominos.playable_tetromino import PlayableTetromino
-from sound import SoundEngine
 from score import Score
 
 
 class Game:
     """Class Game. Class representing the game engine."""
 
-    def __init__(self):
+    def __init__(self, window, sound):
         """Constructor for the class Game."""        
-        pygame.init()
+        self._window = window
+        self._window.init_game()
+        
+        self._sound = sound
         
         self._grid = Grid()
-        self._window = Window()
         self._random = RandomBag()
-        self._sound = SoundEngine()
         self._score_keeper = Score()
         
         self._running = True
@@ -41,12 +40,14 @@ class Game:
         
         pygame.time.set_timer(FRAME_EVENT, REFRESH_PERIOD)
         pygame.key.set_repeat(DAS_DELAY, DAS_RATE)
-        
+                
         
     def __del__(self):
         """Destructor for the class Game."""
-        pygame.quit()
-        
+        pygame.time.set_timer(FRAME_EVENT, 0)
+        pygame.key.set_repeat()
+        self._window.end_game()
+
     
     def _spawn_tetromino(self):
         """Gets the next tetromino to be spawned from the random generator, and
@@ -141,29 +142,34 @@ class Game:
 
     def run(self):
         """Runs a complete game."""
+
+        # Remove any events trailing from previous screen.
+        pygame.event.clear()
         
-        # Variable used to count the fps at which game is being updates.
+        # Variable used to count the fps at which game is being updated.
         fps_counter_clock = pygame.time.Clock()
-        
-        # Variable used to describe if the window was closed or not.
-        window_open = True
         
         # Variable needed to prevent redrawing the screen multiple times
         # in one while loop iteration in case FRAME_EVENTS accumulated due
         # to slow hardware.
         frame_updated = False
         
-        while not self._topped_out and window_open:
-            frame_updated = False            
-            for event in pygame.event.get():
+        while not self._topped_out and not self._window.closed:
+            frame_updated = False
+            
+            for event in pygame.event.get():    
                 if event.type == QUIT:
-                    window_open = False
+                    self._window.close()
+                
                 if event.type == KEYDOWN:
                     self._key_pressed(event.key)
+                
                 elif event.type == KEYUP:
                     self._key_released(event.key) 
-                elif event.type == FRAME_EVENT:
+                
+                elif event.type == FRAME_EVENT:                    
                     self._fall_tetromino()
+                
                     if not frame_updated:                        
                         fps_counter_clock.tick()
                         
@@ -175,21 +181,3 @@ class Game:
                                             fps=fps_counter_clock.get_fps(), show_fps=self._show_fps_counter)
                                                 
                         frame_updated = True
-                    
-        
-        while window_open:
-            frame_updated = False
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    window_open = False
-                elif event.type == FRAME_EVENT and not frame_updated:
-                    fps_counter_clock.tick()
-                    
-                    self._window.update(current_grid=self._grid,
-                                        current_tetromino=self._current_tetromino,
-                                        queue=self._next_queue, held=self._held_tetromino,
-                                        score=self._score_keeper.score, level=self._level,
-                                        goal=self._goal, lines=self._lines_cleared,
-                                        fps=fps_counter_clock.get_fps(), show_fps=self._show_fps_counter)
-                    frame_updated = True
-

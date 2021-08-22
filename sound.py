@@ -12,17 +12,16 @@ class SoundEngine:
     def __init__(self):
         """Constructor for the class SoundEngine."""
         pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
-        pygame.mixer.init()
         
-        self._musics_library = [MUSICS_DIRECTORY+name for name in os.listdir(MUSICS_DIRECTORY)]
-        self._music_current = [elem for elem in self._musics_library if DEFAULT_MUSIC in elem][0]
+        self._music_library = [MUSICS_DIRECTORY+name for name in os.listdir(MUSICS_DIRECTORY)]
+        self._music_current = [elem for elem in self._music_library if DEFAULT_MUSIC in elem][0]
         self._effects_library = {}
 
         for name in os.listdir(EFFECTS_DIRECTORY):
             self._effects_library[name] = pygame.mixer.Sound(name)
-            
+
         self._play_music_current()
-            
+                        
     def __del__(self):
         """Destructor for the class SoundEngine."""
         pygame.mixer.quit()
@@ -34,5 +33,5 @@ class SoundEngine:
         
     def change_music(self):
         """Function that changes the music being played."""
-        self._music_current = self._musics_library[(self._musics_library.index(self._music_current)+1)%len(self._musics_library)]
+        self._music_current = self._music_library[(self._music_library.index(self._music_current)+1)%len(self._musics_library)]
         self._play_music_current()

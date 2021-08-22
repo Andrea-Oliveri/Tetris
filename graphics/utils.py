@@ -30,13 +30,13 @@ def draw_outside_tetromino(tetromino, square_size_pixels):
     return surface
     
 
-def draw_text(message, font_size):
+def draw_text(message, font_size, color = COLORS["text"]):
     """Function that returns a pygame.Surface containing the rendered text 
     with message and size passed as parameters."""
-    return pygame.font.SysFont(FONT, font_size).render(message, True, COLORS["text"], COLORS["background"])
+    return pygame.font.SysFont(FONT, font_size).render(message, True, color, COLORS["background"])
                 
 
-def merge_surfaces_horizontally(surfaces):
+def merge_surfaces_horizontally(surfaces, center=False):
     """Returns a surfaces in which all surfaces passed as parameter are stacked horizontally
     and aligned on top."""
 
@@ -48,7 +48,11 @@ def merge_surfaces_horizontally(surfaces):
     
     current_width = 0
     for surface in surfaces:
-        merged_surface.blit(surface, (current_width, 0))
+        if center:
+            merged_surface.blit(surface, (current_width, (merged_surface_size["height"]-surface.get_height())/2))
+        else:
+            merged_surface.blit(surface, (current_width, 0))
+            
         current_width += surface.get_width() + ELEMENTS_MARGIN_PIXELS
     
     return merged_surface

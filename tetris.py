@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
-from game import Game
+from menu import Menu
 
 
-current_game = Game()
-current_game.run()
-del current_game
+current_menu = Menu()
+current_menu.run()
+del current_menu

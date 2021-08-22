@@ -2,7 +2,7 @@
 
 import pygame
 
-from constants.graphics import WINDOW_SIZE, COLORS
+from constants.graphics import WINDOW_SIZE, COLORS, IMAGE_DIRECTORY, LOGO_IMAGE_NAME, CURSOR_IMAGE_NAME, MENU_LOGO_SURFACE_HEIGHT, MENU_TEXT_FONT_SIZE, MENU_TEXT_SURFACE_HEIGHT
 from graphics import utils
 from graphics.regions.region import Region
 from graphics.regions.hold_region import HoldRegion
@@ -18,9 +18,80 @@ class Window(Region):
     
     def __init__(self):
         """Constructor for the class Window."""
+        Region.__init__(self)
+        
         self._screen = pygame.display.set_mode(WINDOW_SIZE)
         pygame.display.set_caption("Tetris")
         
+        # Variable used to describe if the window was closed or not.
+        self._closed = False
+        
+        
+    def get_closed(self):
+        return self._closed
+    
+    
+    closed = property(get_closed)
+    
+    def close(self):
+        self._closed = True
+        
+        
+    def draw_menu(self, text_lines, idx_line_selected):
+        # Load logo and cursor assets.
+        logo = pygame.image.load(IMAGE_DIRECTORY + LOGO_IMAGE_NAME).convert_alpha()
+        cursor = pygame.image.load(IMAGE_DIRECTORY + CURSOR_IMAGE_NAME).convert_alpha()
+
+        # Convert color of menu cursor.
+        color_selected = COLORS['menu_text_selected']
+        array = pygame.surfarray.pixels3d(cursor)
+        for color_component in range(len(color_selected)):
+            array[:, :, color_component] = color_selected[color_component]
+        del array
+
+        # Generating text in menu.
+        text_surfaces = []
+        for idx, text in enumerate(text_lines):
+            text_surface = utils.draw_text(text, MENU_TEXT_FONT_SIZE, 
+                                           color = color_selected if idx == idx_line_selected else COLORS['text'])
+            text_surfaces.append(text_surface)
+        
+        # Add cursor to selected line.
+        text_surfaces[idx_line_selected] = utils.merge_surfaces_horizontally([cursor, text_surfaces[idx_line_selected]], True)
+        
+        ## Add padding to logo, cursor and text surfaces.
+        logo          = utils.merge_surfaces_vertically([logo], False, MENU_LOGO_SURFACE_HEIGHT)
+        text_surfaces = [utils.merge_surfaces_vertically([surface], False, MENU_TEXT_SURFACE_HEIGHT) for surface in text_surfaces]
+
+        self._surface = utils.merge_surfaces_vertically([logo, *text_surfaces])
+        
+        self._screen.fill(COLORS["background"])
+        self._screen.blit(self._surface, ((self._screen.get_width()-self._surface.get_width())/2,
+                                          (self._screen.get_height()-self._surface.get_height())/2))        
+        pygame.display.update()
+        
+    
+    def draw_menu_controls(self):
+        # Load logo and cursor assets.
+        logo = pygame.image.load(IMAGE_DIRECTORY + LOGO_IMAGE_NAME).convert_alpha()
+        
+        keys_surfaces = []
+        
+        import os
+        for name in [name for name in os.listdir(IMAGE_DIRECTORY) if 'key' in name]:
+            keys_surfaces.append(pygame.image.load(IMAGE_DIRECTORY + name).convert_alpha())
+        
+        self._surface = utils.merge_surfaces_vertically([*keys_surfaces])
+        
+        self._screen.fill(COLORS["background"])
+        self._screen.blit(self._surface, ((self._screen.get_width()-self._surface.get_width())/2,
+                                          (self._screen.get_height()-self._surface.get_height())/2))        
+        pygame.display.update()
+    
+   
+        
+        
+    def init_game(self):
         self._hold_region = HoldRegion()
         self._grid_region = GridRegion()
         self._queue_region = QueueRegion()
@@ -28,7 +99,15 @@ class Window(Region):
         self._level_region = LevelRegion()
         self._score_region = ScoreRegion()
         
-        Region.__init__(self)
+        
+        
+    def end_game(self):
+        del self._hold_region
+        del self._grid_region
+        del self._queue_region
+        del self._fps_region
+        del self._level_region
+        del self._score_region
 
 
     def update(self, **kwargs):
