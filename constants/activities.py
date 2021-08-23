@@ -1,4 +1,4 @@
-from constants.gui import REFRESH_PERIOD
+from constants.gui import REFRESH_RATE
 
 # Constant defining the text lines present in the menu. Position in list corresponds to 
 # position in menu and content are the sentences.
@@ -23,7 +23,7 @@ MENU_CONTROLS_TEXT_LINES = {'Move tetromino to the left': ('key_left.png', ),
 
 
 # Constant defining the delay to wait before locking a tetromino in place in frames.
-LOCK_DELAY = 500 / REFRESH_PERIOD
+LOCK_DELAY = 0.5 * REFRESH_RATE
 
 # Constant defining the fixed goal to increase by one level.
 FIXED_GOAL = 10
