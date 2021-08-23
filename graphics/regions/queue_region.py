@@ -29,5 +29,5 @@ class QueueRegion(Region):
         
         queue = kwargs["queue"]
     
-        pieces = [utils.draw_outside_tetromino(piece, QUEUE_SQUARE_SIZE_PIXELS) for piece in queue]
+        pieces = [utils.draw_outside_tetrimino(piece, QUEUE_SQUARE_SIZE_PIXELS) for piece in queue]
         self._surface = utils.merge_surfaces_vertically([self._text, *pieces], total_height = QUEUE_SURFACE_HEIGHT)

@@ -2,16 +2,16 @@
 
 from abc import ABC, abstractmethod
 
-from constants.tetromino import MAPS
+from constants.tetrimino import MAPS
 
 
-class Tetromino(ABC):
-    """Class Tetromino. Abtract class defining the general interface of all tetrominos, both
+class Tetrimino(ABC):
+    """Class Tetrimino. Abtract class defining the general interface of all tetriminos, both
     playable and solid."""
     
     @abstractmethod
     def __init__(self, letter, rotation):
-        """Constructor for the class Tetromino."""
+        """Constructor for the class Tetrimino."""
         self._letter = str(letter)
         self._MAPS = MAPS[letter]
         self._MAPS_SIZE = {"height": len(self._MAPS["DEG_0"]), "width": len(self._MAPS["DEG_0"][0])}

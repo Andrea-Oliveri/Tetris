@@ -22,7 +22,7 @@ class HoldRegion(Region):
         held = kwargs["held"]
     
         if held != None:
-            piece = utils.draw_outside_tetromino(held, HOLD_SQUARE_SIZE_PIXELS)
+            piece = utils.draw_outside_tetrimino(held, HOLD_SQUARE_SIZE_PIXELS)
             self._surface = utils.merge_surfaces_vertically([self._text, piece])
         else:
             self._surface = self._text

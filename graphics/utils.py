@@ -3,28 +3,28 @@
 import pygame
 
 from constants.graphics import COLORS, ELEMENTS_MARGIN_PIXELS, FONT
-from constants.tetromino import MAPS
+from constants.tetrimino import MAPS
 
 
-def draw_outside_tetromino(tetromino, square_size_pixels):
-    """Function that returns a pygame.Surface containing the tetromino passed
+def draw_outside_tetrimino(tetrimino, square_size_pixels):
+    """Function that returns a pygame.Surface containing the tetrimino passed
     as parameter and using the square size passed as parameter.
-    Only draws non-ghost tetrominos, vertically centered and at DEG_0 rotation."""
-    tetromino_map = MAPS[tetromino]["DEG_0"]
-    tetromino_size = {"width": len(tetromino_map[0]), "height": 2}
+    Only draws non-ghost tetriminos, vertically centered and at DEG_0 rotation."""
+    tetrimino_map = MAPS[tetrimino]["DEG_0"]
+    tetrimino_size = {"width": len(tetrimino_map[0]), "height": 2}
 
-    if tetromino == 'I':
-        tetromino_map = tetromino_map[1:]
-        tetromino_size["height"] = 1
+    if tetrimino == 'I':
+        tetrimino_map = tetrimino_map[1:]
+        tetrimino_size["height"] = 1
     
-    surface = pygame.Surface((tetromino_size["width"]*square_size_pixels, 
-                              tetromino_size["height"]*square_size_pixels))
+    surface = pygame.Surface((tetrimino_size["width"]*square_size_pixels, 
+                              tetrimino_size["height"]*square_size_pixels))
     surface.fill(COLORS["background"])    
     
-    for line in range(tetromino_size["height"]):
-        for col in range(tetromino_size["width"]):
-            if tetromino_map[line][col]:
-                pygame.draw.rect(surface, COLORS[tetromino], 
+    for line in range(tetrimino_size["height"]):
+        for col in range(tetrimino_size["width"]):
+            if tetrimino_map[line][col]:
+                pygame.draw.rect(surface, COLORS[tetrimino], 
                                  (col*square_size_pixels, line*square_size_pixels,
                                   square_size_pixels, square_size_pixels))
     return surface

@@ -23,23 +23,23 @@ class Grid:
         
         return self._grid[line][col] == " "
     
-    def lock_down(self, tetromino, level, score_keeper):
-        """Locks the tetromino in the grid into place.
+    def lock_down(self, tetrimino, level, score_keeper):
+        """Locks the tetrimino in the grid into place.
         Calls methods of score_keeper to add score obtained with this move, returns
-        the cleared number of lines and True if the tetromino locked down outside 
+        the cleared number of lines and True if the tetrimino locked down outside 
         the visible area (Lock Out), False otherwise."""       
         lock_out = True
         
-        for line in range(tetromino.MAPS_SIZE["height"]):
-            for col in range(tetromino.MAPS_SIZE["width"]):
-                grid_line = tetromino.position[0]-line
-                grid_col = tetromino.position[1]+col
-                if tetromino[line][col]:
-                    self._grid[grid_line][grid_col] = tetromino.letter
+        for line in range(tetrimino.MAPS_SIZE["height"]):
+            for col in range(tetrimino.MAPS_SIZE["width"]):
+                grid_line = tetrimino.position[0]-line
+                grid_col = tetrimino.position[1]+col
+                if tetrimino[line][col]:
+                    self._grid[grid_line][grid_col] = tetrimino.letter
                     if grid_line < VISIBLE_SIZE["height"]:
                         lock_out = False
                 
-        reward_tspin = tetromino.detect_3_corner_T_spin(self)
+        reward_tspin = tetrimino.detect_3_corner_T_spin(self)
         lines_cleared = self._clear_lines()
         
         if lines_cleared:

@@ -4,5 +4,5 @@
 SIZE = {"width": 10, "height": 40}
 VISIBLE_SIZE = {"width": 10, "height": 20}
 
-# Constant defining the row on the grid at which tetrominos spawn.
+# Constant defining the row on the grid at which tetriminos spawn.
 SPAWN_ROW = 21

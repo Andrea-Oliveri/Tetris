@@ -106,11 +106,11 @@ class Window:
         del self._score_region
 
 
-    def update_game(self, current_grid, current_tetromino, queue, held, score,
+    def update_game(self, current_grid, current_tetrimino, queue, held, score,
                     level, goal, lines, fps, show_fps):
         """Implementation of the update method for the Window."""
         self._hold_region.update(held = held)
-        self._grid_region.update(current_grid = current_grid, current_tetromino = current_tetromino)
+        self._grid_region.update(current_grid = current_grid, current_tetrimino = current_tetrimino)
         self._queue_region.update(queue = queue)
         self._level_region.update(level = level, goal = goal, lines = lines)
         self._score_region.update(score = score)

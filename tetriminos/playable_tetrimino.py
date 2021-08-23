@@ -2,22 +2,22 @@
 
 from math import floor
 
-from tetrominos.tetromino import Tetromino
-from tetrominos.ghost_tetromino import GhostTetromino
+from tetriminos.tetrimino import Tetrimino
+from tetriminos.ghost_tetrimino import GhostTetrimino
 from constants import grid
-from constants.tetromino import ROTATION_TESTS, GRAVITY, SOFT_DROP_FACTOR, HARD_DROP_GRAVITY
+from constants.tetrimino import ROTATION_TESTS, GRAVITY, SOFT_DROP_FACTOR, HARD_DROP_GRAVITY
 
 
-class PlayableTetromino(Tetromino):
-    """Class PlayableTetromino. Class representing all playable tetrominos.
-    Tetrominos spawn in rows 20 and 21, and are centered horizontally, eventually rounded to the left.
+class PlayableTetrimino(Tetrimino):
+    """Class PlayableTetrimino. Class representing all playable tetriminos.
+    Tetriminos spawn in rows 20 and 21, and are centered horizontally, eventually rounded to the left.
     If possible, they immediately drop one block upon spawning.
-    _blocked_out attribute is only needed to see if the tetromino already collides with a block upon
+    _blocked_out attribute is only needed to see if the tetrimino already collides with a block upon
     spawning, which resuts in the game ending."""
     
     def __init__(self, letter, current_grid):
-        """Constructor for the class Tetromino."""
-        Tetromino.__init__(self, letter, "DEG_0")
+        """Constructor for the class Tetrimino."""
+        Tetrimino.__init__(self, letter, "DEG_0")
         self._position = [grid.SPAWN_ROW, floor((grid.SIZE["width"]-self._MAPS_SIZE["width"])/2)]
         self._blocked_out = self._collision(self._position, self._rotation, current_grid)
         if not self._blocked_out:
@@ -32,8 +32,8 @@ class PlayableTetromino(Tetromino):
         return int(self._lock_counter)
     
     def _get_ghost(self):
-        """Special function that allows to get the corresponding GhostTetromino from the exterior."""
-        return GhostTetromino(self._letter, self._ghost_position, self._rotation)
+        """Special function that allows to get the corresponding GhostTetrimino from the exterior."""
+        return GhostTetrimino(self._letter, self._ghost_position, self._rotation)
     
     def _get_blocked_out(self):
         """Special function that allows to get the attribute _blocked_out from the exterior."""
@@ -52,7 +52,7 @@ class PlayableTetromino(Tetromino):
     blocked_out = property(_get_blocked_out)
 
     def _collision(self, position, rotation, current_grid):
-        """Returns True if moving the tetromino to the position and rotation 
+        """Returns True if moving the tetrimino to the position and rotation 
         passed as parameter resulted in a collision, False otherwise."""
         for line in range(self.MAPS_SIZE["height"]):
             for col in range(self.MAPS_SIZE["width"]):
@@ -64,7 +64,7 @@ class PlayableTetromino(Tetromino):
         return False
     
     def _touching(self, current_grid):
-        """Returns True if the tetromino is touching the a block of the grid which
+        """Returns True if the tetrimino is touching the a block of the grid which
         would impede his movement down, False otherwise."""
         return self._collision([self.position[0]-1, self.position[1]], self._rotation, current_grid)
         
@@ -81,8 +81,8 @@ class PlayableTetromino(Tetromino):
         return [line, self._position[1]]
 
     def _initial_drop(self, current_grid):
-        """Function that drops the tetromino one case if collisions allow it.
-        Only called when the tetromino is spawned."""
+        """Function that drops the tetrimino one case if collisions allow it.
+        Only called when the tetrimino is spawned."""
         new_position = self.position
         new_position[0] -= 1
         
@@ -90,7 +90,7 @@ class PlayableTetromino(Tetromino):
             self._position = new_position
 
     def rotate(self, direction, current_grid):
-        """Rotates the tetromino in the desired direction ("clockwise" or "anticlockwise")."""
+        """Rotates the tetrimino in the desired direction ("clockwise" or "anticlockwise")."""
         new_rotation = None
         if direction == "clockwise":
             if self._rotation == "DEG_0":
@@ -128,7 +128,7 @@ class PlayableTetromino(Tetromino):
                 break
     
     def move_sideways(self, direction, current_grid):
-        """Moves the tetromino either "left" or "right" if collision allow it."""
+        """Moves the tetrimino either "left" or "right" if collision allow it."""
         new_position = self.position
                 
         if direction == "left":
@@ -143,7 +143,7 @@ class PlayableTetromino(Tetromino):
             self._last_movement_is_rotation = False
     
     def move_down(self, current_grid, level, drop_type="normal"):
-        """Moves the tetromino down if collisions allow it.
+        """Moves the tetrimino down if collisions allow it.
         The level parameter is needed to know what value of gravity to use.
         We can move with three types of drops: "normal", "soft" or "hard"."""
         gravity = None
@@ -154,7 +154,7 @@ class PlayableTetromino(Tetromino):
         elif drop_type == "hard":
             gravity = HARD_DROP_GRAVITY
         else:
-            raise TypeError("PlayableTetromino.move_down() parameter drop_type must be either normal, soft or hard")
+            raise TypeError("PlayableTetrimino.move_down() parameter drop_type must be either normal, soft or hard")
         
         old_line_position = self.position[0]
         
@@ -183,7 +183,7 @@ class PlayableTetromino(Tetromino):
         return old_line_position - self.position[0]
     
     def detect_3_corner_T_spin(self, current_grid):
-        """Returns True if the tetromino is a T, last movement was rotation and
+        """Returns True if the tetrimino is a T, last movement was rotation and
         center piece of T has 3 diagonally adjacent blocks."""
         
         if not (self._letter == "T" and self._last_movement_is_rotation):

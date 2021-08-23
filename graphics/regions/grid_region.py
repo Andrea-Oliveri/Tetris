@@ -19,12 +19,12 @@ class GridRegion(Region):
     
     def update(self, **kwargs):
         """Implementation of the update method for the HoldRegion."""
-        self._update_kwargs_test(kwargs, ["current_grid", "current_tetromino"])
+        self._update_kwargs_test(kwargs, ["current_grid", "current_tetrimino"])
         
         self._surface.fill(COLORS["background"])
         self._draw_current_grid(kwargs["current_grid"])
-        self._draw_tetromino(kwargs["current_tetromino"].ghost, True)
-        self._draw_tetromino(kwargs["current_tetromino"], False)
+        self._draw_tetrimino(kwargs["current_tetrimino"].ghost, True)
+        self._draw_tetrimino(kwargs["current_tetrimino"], False)
         self._draw_borders()
                 
     
@@ -40,15 +40,15 @@ class GridRegion(Region):
                                       GRID_SQUARE_SIZE_PIXELS, GRID_SQUARE_SIZE_PIXELS))
 
 
-    def _draw_tetromino(self, tetromino, ghost=False):
-        """Draws either the current tetromino or its ghost on the grid."""
-        for line in range(tetromino.MAPS_SIZE["height"]):
-            for col in range(tetromino.MAPS_SIZE["width"]):
-                if tetromino[line][col]:
-                    square_col = tetromino.position[1]+col
-                    square_line = grid.VISIBLE_SIZE["height"]-1-tetromino.position[0]+line
+    def _draw_tetrimino(self, tetrimino, ghost=False):
+        """Draws either the current tetrimino or its ghost on the grid."""
+        for line in range(tetrimino.MAPS_SIZE["height"]):
+            for col in range(tetrimino.MAPS_SIZE["width"]):
+                if tetrimino[line][col]:
+                    square_col = tetrimino.position[1]+col
+                    square_line = grid.VISIBLE_SIZE["height"]-1-tetrimino.position[0]+line
                     if square_line >= 0:
-                        color = COLORS[tetromino.letter]
+                        color = COLORS[tetrimino.letter]
                         if ghost:
                             color = [val*GHOST_COLOR_FACTOR for val in color]
                             
