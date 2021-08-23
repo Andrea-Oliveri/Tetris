@@ -20,7 +20,6 @@ class SoundEngine:
         for name in os.listdir(EFFECTS_DIRECTORY):
             self._effects_library[name] = pygame.mixer.Sound(name)
 
-        self._play_music_current()
                         
     def __del__(self):
         """Destructor for the class SoundEngine."""

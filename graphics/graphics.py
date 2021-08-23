@@ -2,7 +2,7 @@
 
 import pygame
 
-from constants.graphics import WINDOW_SIZE, COLORS, IMAGE_DIRECTORY, LOGO_IMAGE_NAME, CURSOR_IMAGE_NAME, MENU_LOGO_SURFACE_HEIGHT, MENU_TEXT_FONT_SIZE, MENU_TEXT_SURFACE_HEIGHT
+from constants.graphics import WINDOW_SIZE, COLORS, IMAGE_DIRECTORY, LOGO_IMAGE_NAME, CURSOR_IMAGE_NAME, MENU_LOGO_SURFACE_HEIGHT, MENU_TEXT_FONT_SIZE, MENU_TEXT_SURFACE_HEIGHT, MENU_CONTROLS_TEXT_FONT_SIZE
 from graphics import utils
 from graphics.regions.region import Region
 from graphics.regions.hold_region import HoldRegion
@@ -71,17 +71,17 @@ class Window(Region):
         pygame.display.update()
         
     
-    def draw_menu_controls(self):
-        # Load logo and cursor assets.
-        logo = pygame.image.load(IMAGE_DIRECTORY + LOGO_IMAGE_NAME).convert_alpha()
+    def draw_menu_controls(self, controls_lines):
         
         keys_surfaces = []
-        
-        import os
-        for name in [name for name in os.listdir(IMAGE_DIRECTORY) if 'key' in name]:
-            keys_surfaces.append(pygame.image.load(IMAGE_DIRECTORY + name).convert_alpha())
-        
-        self._surface = utils.merge_surfaces_vertically([*keys_surfaces])
+        text_surfaces = []
+        for text, key_files in controls_lines.items():
+            keys_surface = [pygame.image.load(IMAGE_DIRECTORY + key_file).convert_alpha() for key_file in key_files]
+            
+            keys_surfaces.append(utils.merge_surfaces_horizontally(keys_surface))
+            text_surfaces.append(utils.draw_text(text, MENU_CONTROLS_TEXT_FONT_SIZE))
+            
+        self._surface = utils.merge_surfaces_in_table(keys_surfaces, text_surfaces)
         
         self._screen.fill(COLORS["background"])
         self._screen.blit(self._surface, ((self._screen.get_width()-self._surface.get_width())/2,

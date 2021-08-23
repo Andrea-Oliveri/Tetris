@@ -3,6 +3,8 @@
 import pygame
 from pygame.locals import QUIT, KEYDOWN, K_RETURN, K_ESCAPE
 
+from constants.menu_controls import MENU_CONTROLS_TEXT_LINES
+
 
 class MenuControls:
     """Class MenuControls. Class representing the menu page showing the controls."""
@@ -10,7 +12,7 @@ class MenuControls:
     def __init__(self, window):
         """Constructor for the class MenuControls."""        
         self._window = window
-        self._window.draw_menu_controls()
+        self._window.draw_menu_controls(MENU_CONTROLS_TEXT_LINES)
         
 
     def run(self):

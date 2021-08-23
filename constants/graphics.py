@@ -33,6 +33,7 @@ FPS_FONT_SIZE   = 20
 LEVEL_FONT_SIZE = 20
 SCORE_FONT_SIZE = 25
 MENU_TEXT_FONT_SIZE = 30
+MENU_CONTROLS_TEXT_FONT_SIZE = 20
 
 # Constant defining where the image are stored.
 IMAGE_DIRECTORY = "./assets/images/"

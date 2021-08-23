@@ -84,3 +84,30 @@ def merge_surfaces_vertically(surfaces, center=True, total_height=None):
         current_height += surface.get_height() + ELEMENTS_MARGIN_PIXELS
 
     return merged_surface
+
+
+def merge_surfaces_in_table(left_col_surfaces, right_col_surfaces):
+    """Returns a surfaces in which all surfaces passed as parameter in left_col_surfaces
+    are stacked vertically and right-aligned, whereas all surfaces passed in right_col_surfaces
+    are stacked vertically and left-aligned. Each element in left_col_surfaces is also 
+    vertically aligned to be centered with the corresponding one in right_column_surfaces."""
+    
+    left_col_width = max([line.get_width() for line in left_col_surfaces])
+    right_col_width = max([line.get_width() for line in right_col_surfaces])
+        
+    total_line_width = left_col_width + right_col_width + ELEMENTS_MARGIN_PIXELS
+    
+    line_surfaces = []
+    for left_col_surface, right_col_surface in zip(left_col_surfaces, right_col_surfaces):
+        line_surface = merge_surfaces_horizontally([left_col_surface, right_col_surface], True)
+        
+        line_surface_padded = pygame.Surface((total_line_width, line_surface.get_height()))
+        line_surface_padded.fill(COLORS["background"])
+
+        line_surface_padded.blit(line_surface, (left_col_width - left_col_surface.get_width(), 0))
+        
+        line_surfaces.append(line_surface_padded)
+        
+    table_surface = merge_surfaces_vertically(line_surfaces)
+    
+    return table_surface
