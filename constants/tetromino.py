@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from constants.game import REFRESH_PERIOD
+from constants.gui import REFRESH_PERIOD
 
 # Constant defined as the maps of each tetromino for each rotation
 MAPS = { "I": { "DEG_0"  : ((0,0,0,0),

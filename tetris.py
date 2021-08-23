@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
-from menu import Menu
+from gui import Gui
 
 
-current_menu = Menu()
-current_menu.run()
-del current_menu
+app_gui = Gui()
+app_gui.run()
+del app_gui

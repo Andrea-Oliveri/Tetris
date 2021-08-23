@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 
-import pygame
-from pygame.locals import QUIT, KEYDOWN, KEYUP, K_c, K_x, K_z, K_r, K_SPACE, K_LEFT, K_RIGHT, K_UP, K_DOWN, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL, K_ESCAPE, K_F1, K_F2
+from pygame.locals import K_c, K_x, K_z, K_r, K_SPACE, K_LEFT, K_RIGHT, K_UP, K_DOWN, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL, K_ESCAPE, K_RETURN, K_F1, K_F2
 
-from constants.game import REFRESH_PERIOD, FRAME_EVENT, DAS_DELAY, DAS_RATE, LOCK_DELAY, FIXED_GOAL, LEVEL_CAP
+from constants.activities import LOCK_DELAY, FIXED_GOAL, LEVEL_CAP
+from activities.activity import Activity
+
 from grid import Grid
 from random_bag import RandomBag
 from tetrominos.playable_tetromino import PlayableTetromino
 from score import Score
 
 
-class Game:
+class Game(Activity):
     """Class Game. Class representing the game engine."""
 
     def __init__(self, window, sound):
-        """Constructor for the class Game."""        
-        self._window = window
+        """Constructor for the class Game."""
+        Activity.__init__(self, window)
+
         self._window.init_game()
-        
         self._sound = sound
         
         self._grid = Grid()
@@ -38,14 +39,10 @@ class Game:
         self._lines_cleared = 0
         self._spawn_tetromino()        
         
-        pygame.time.set_timer(FRAME_EVENT, REFRESH_PERIOD)
-        pygame.key.set_repeat(DAS_DELAY, DAS_RATE)
                 
         
     def __del__(self):
         """Destructor for the class Game."""
-        pygame.time.set_timer(FRAME_EVENT, 0)
-        pygame.key.set_repeat()
         self._window.end_game()
 
     
@@ -57,6 +54,7 @@ class Game:
         self._current_tetromino = PlayableTetromino(current_piece, self._grid)      
         if self._current_tetromino.blocked_out:
             self._topped_out = True
+            self._running = False
 
 
     def _fall_tetromino(self):
@@ -89,6 +87,7 @@ class Game:
             
             if lock_out:
                 self._topped_out = True
+                self._running = False
             else:
                 self._spawn_tetromino()
                 self._swap_allowed = True
@@ -109,75 +108,48 @@ class Game:
             self._swap_allowed = False
     
     
-    def _key_pressed(self, key):
+    def event_update_screen(self, fps):
+        self._fall_tetromino()
+        self._window.update_game(current_grid = self._grid,
+                                 current_tetromino = self._current_tetromino,
+                                 queue = self._next_queue, held = self._held_tetromino,
+                                 score = self._score_keeper.score, level = self._level,
+                                 goal = self._goal, lines = self._lines_cleared,
+                                 fps = fps, show_fps = self._show_fps_counter)
+    
+    
+    def event_key_pressed(self, key):
         """Reacts to key being pressed, except if it is being held (with the
         only exception of right and left arrow) and, depending on the key,
         if the game is paused. Updates self._keys_down to say key is being pressed."""
         key_held = self._keys_down.get(key, False)
         self._keys_down[key] = True
         
-        if key == K_LEFT and self._running:
-            self._current_tetromino.move_sideways("left", self._grid)
-        elif key == K_RIGHT and self._running:
-            self._current_tetromino.move_sideways("right", self._grid)
-        elif not key_held:
-            if (key == K_c or key == K_LSHIFT or key == K_RSHIFT) and self._running:
-                self._swap_held_tetromino()
-            elif (key == K_x or key == K_UP) and self._running:
-                self._current_tetromino.rotate("clockwise", self._grid)
-            elif (key == K_z or key == K_LCTRL or key == K_RCTRL) and self._running:
-                self._current_tetromino.rotate("anticlockwise", self._grid)
-            elif key == K_r:
-                self._sound.change_music()
-            elif key == K_ESCAPE or key == K_F1:
-                self._running = not self._running
-            elif key == K_F2:
-                self._show_fps_counter = not self._show_fps_counter
+        if self._running:
+            if key == K_LEFT:
+                self._current_tetromino.move_sideways("left", self._grid)
+            elif key == K_RIGHT:
+                self._current_tetromino.move_sideways("right", self._grid)
+            elif not key_held:
+                if key in (K_c, K_LSHIFT, K_RSHIFT):
+                    self._swap_held_tetromino()
+                elif key in (K_x, K_UP):
+                    self._current_tetromino.rotate("clockwise", self._grid)
+                elif key in (K_z, K_LCTRL, K_RCTRL):
+                    self._current_tetromino.rotate("anticlockwise", self._grid)
+        
+        if key == K_r:
+            self._sound.change_music()
+        elif key == K_ESCAPE or key == K_F1:
+            # Only allow changing running attribute to True if not topped out.
+            self._running = not self._running and not self._topped_out
+        elif key == K_F2:
+            self._show_fps_counter = not self._show_fps_counter
+        
+        change_activity = self._topped_out and key in [K_RETURN, K_ESCAPE]
+        return change_activity
                 
         
-    def _key_released(self, key):
+    def event_key_released(self, key):
         """Reacts to the user releasing a key."""
         self._keys_down[key] = False
-
-
-    def run(self):
-        """Runs a complete game."""
-
-        # Remove any events trailing from previous screen.
-        pygame.event.clear()
-        
-        # Variable used to count the fps at which game is being updated.
-        fps_counter_clock = pygame.time.Clock()
-        
-        # Variable needed to prevent redrawing the screen multiple times
-        # in one while loop iteration in case FRAME_EVENTS accumulated due
-        # to slow hardware.
-        frame_updated = False
-        
-        while not self._topped_out and not self._window.closed:
-            frame_updated = False
-            
-            for event in pygame.event.get():    
-                if event.type == QUIT:
-                    self._window.close()
-                
-                if event.type == KEYDOWN:
-                    self._key_pressed(event.key)
-                
-                elif event.type == KEYUP:
-                    self._key_released(event.key) 
-                
-                elif event.type == FRAME_EVENT:                    
-                    self._fall_tetromino()
-                
-                    if not frame_updated:                        
-                        fps_counter_clock.tick()
-                        
-                        self._window.update(current_grid=self._grid,
-                                            current_tetromino=self._current_tetromino,
-                                            queue=self._next_queue, held=self._held_tetromino,
-                                            score=self._score_keeper.score, level=self._level,
-                                            goal=self._goal, lines=self._lines_cleared,
-                                            fps=fps_counter_clock.get_fps(), show_fps=self._show_fps_counter)
-                                                
-                        frame_updated = True
