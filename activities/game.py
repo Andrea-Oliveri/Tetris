@@ -20,6 +20,7 @@ class Game(Activity):
 
         self._window.init_game()
         self._sound = sound
+        self._sound.use_game_music()
         
         self._grid = Grid()
         self._random = RandomBag()
@@ -44,7 +45,7 @@ class Game(Activity):
     def __del__(self):
         """Destructor for the class Game."""
         self._window.end_game()
-
+        self._sound.use_menu_music()
     
     def _spawn_tetrimino(self):
         """Gets the next tetrimino to be spawned from the random generator, and
@@ -138,9 +139,7 @@ class Game(Activity):
                 elif key in (K_z, K_LCTRL, K_RCTRL):
                     self._current_tetrimino.rotate("anticlockwise", self._grid)
         
-        if key == K_r:
-            self._sound.change_music()
-        elif key == K_ESCAPE or key == K_F1:
+        if key == K_ESCAPE or key == K_F1:
             # Only allow changing running attribute to True if not topped out.
             self._running = not self._running and not self._topped_out
         elif key == K_F2:

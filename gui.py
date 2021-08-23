@@ -1,5 +1,5 @@
 import pygame
-from pygame.locals import QUIT, KEYDOWN, KEYUP
+from pygame.locals import QUIT, KEYDOWN, KEYUP, K_r
 
 from constants.gui import REFRESH_RATE, DAS_DELAY, DAS_RATE
 from sound import SoundEngine
@@ -45,6 +45,10 @@ class Gui():
                     self._window.close()
                 
                 if event.type == KEYDOWN:
+                    if event.key == K_r:
+                        self._sound.change_track()
+                        continue
+                    
                     output = self._current_activity.event_key_pressed(event.key)
                     
                     if isinstance(self._current_activity, Menu):
