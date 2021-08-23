@@ -3,7 +3,7 @@
 import pygame
 import os
 
-from constants.sound import MUSICS_DIRECTORY, EFFECTS_DIRECTORY, GAME_MUSIC, MENU_MUSIC
+from constants.sound import MUSICS_DIRECTORY, EFFECTS_DIRECTORY, GAME_MUSIC, MENU_MUSIC, SOUND_EFFECTS
 
 
 class SoundEngine:
@@ -18,15 +18,13 @@ class SoundEngine:
 
         self.use_menu_music()
         
-        self._effects_library = {}
+        self._effects_library = {name: pygame.mixer.Sound(EFFECTS_DIRECTORY + file) for name, file in SOUND_EFFECTS.items()}
 
-        for name in os.listdir(EFFECTS_DIRECTORY):
-            self._effects_library[name] = pygame.mixer.Sound(name)
 
-    
     def __del__(self):
         """Destructor for the class SoundEngine."""
         pygame.mixer.quit()
+
         
     def use_game_music(self):
         self._current_tracks = self._game_tracks
@@ -54,3 +52,7 @@ class SoundEngine:
         """Function that loads and plays in a loop attribute _music_current."""
         pygame.mixer.music.load(self._current_tracks[self._current_track_idx])
         pygame.mixer.music.play(-1)
+        
+    
+    def play_sound_effect(self, effect):
+        self._effects_library[effect].play()

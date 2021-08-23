@@ -6,8 +6,8 @@ from activities.activity import Activity
 
 class Menu(Activity):
     
-    def __init__(self, window):
-        Activity.__init__(self, window)
+    def __init__(self, window, sound):
+        Activity.__init__(self, window, sound)
         
         self.menu_line_selected = 0
         self.need_to_redraw = True
@@ -27,10 +27,13 @@ class Menu(Activity):
         
         if key == K_UP:
             self.menu_line_selected = (self.menu_line_selected - 1) % len(MENU_TEXT_LINES)
+            self._sound.play_sound_effect('menu_move')
         elif key == K_DOWN:
             self.menu_line_selected = (self.menu_line_selected + 1) % len(MENU_TEXT_LINES)
+            self._sound.play_sound_effect('menu_move')
         elif key == K_RETURN:
             text_pressed = MENU_TEXT_LINES[self.menu_line_selected]
+            self._sound.play_sound_effect('menu_select')
         
         return change_activity, text_pressed
                     

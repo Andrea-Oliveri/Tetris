@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pygame.locals import K_c, K_x, K_z, K_r, K_SPACE, K_LEFT, K_RIGHT, K_UP, K_DOWN, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL, K_ESCAPE, K_RETURN, K_F1, K_F2
+from pygame.locals import K_c, K_x, K_z, K_SPACE, K_LEFT, K_RIGHT, K_UP, K_DOWN, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL, K_ESCAPE, K_RETURN, K_F1, K_F2
 
 from constants.activities import LOCK_DELAY, FIXED_GOAL, LEVEL_CAP
 from activities.activity import Activity
@@ -16,10 +16,9 @@ class Game(Activity):
 
     def __init__(self, window, sound):
         """Constructor for the class Game."""
-        Activity.__init__(self, window)
+        Activity.__init__(self, window, sound)
 
         self._window.init_game()
-        self._sound = sound
         self._sound.use_game_music()
         
         self._grid = Grid()
@@ -69,9 +68,17 @@ class Game(Activity):
         if self._keys_down.get(K_SPACE, False):
             n_lines_dropped = self._current_tetrimino.move_down(self._grid, self._level, "hard")
             self._score_keeper.add_to_score("hard_drop", {"n_lines": n_lines_dropped})
+            
+            if n_lines_dropped:
+                self._sound.play_sound_effect('game_hard_drop')
+            
         elif self._keys_down.get(K_DOWN, False):
             n_lines_dropped = self._current_tetrimino.move_down(self._grid, self._level, "soft")
             self._score_keeper.add_to_score("soft_drop", {"n_lines": n_lines_dropped})
+            
+            if n_lines_dropped:
+                self._sound.play_sound_effect('game_soft_drop')                
+            
         else:
             self._current_tetrimino.move_down(self._grid, self._level, "normal")        
                 
@@ -107,6 +114,8 @@ class Game(Activity):
                 self._current_tetrimino = PlayableTetrimino(old_held, self._grid)
             
             self._swap_allowed = False
+            
+            self._sound.play_sound_effect('game_hold')
     
     
     def event_update_screen(self, fps):
@@ -146,6 +155,10 @@ class Game(Activity):
             self._show_fps_counter = not self._show_fps_counter
         
         change_activity = self._topped_out and key in [K_RETURN, K_ESCAPE]
+        
+        if change_activity:
+            self._sound.play_sound_effect('menu_back')
+        
         return change_activity
                 
         

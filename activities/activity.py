@@ -5,9 +5,10 @@ class Activity(ABC):
     """Class Activity. Class representing a program state that can be shown on the window."""
          
     
-    def __init__(self, window):
+    def __init__(self, window, sound):
         """Constructor for the class Activity."""
         self._window = window
+        self._sound = sound
     
     @abstractmethod
     def event_update_screen(self, fps):

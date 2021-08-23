@@ -9,3 +9,23 @@ EFFECTS_DIRECTORY = "./assets/sounds/effects/"
 GAME_MUSIC = ["A-Type.mp3", "B-Type.mp3", "C-Type.mp3"]
 MENU_MUSIC = ["Menu.mp3"]
 
+# Constant associating for each sound effect's action the file to play.
+SOUND_EFFECTS = {"menu_move": "menu/move.wav",                # OK
+                 "menu_select": "menu/select.wav",            # OK
+                 "menu_back": "menu/back.wav",                # OK
+                 "game_count": "game/count.wav",
+                 "game_move": "game/move.wav",
+                 "game_rotate": "game/rotate.wav",
+                 "game_hold": "game/hold.wav",                # OK
+                 "game_alert": "game/alert.wav",
+                 "game_landing": "game/landing.wav",
+                 "game_lock": "game/lock.wav",
+                 "game_soft_drop": "game/soft_drop.wav",      # OK
+                 "game_hard_drop": "game/hard_drop.wav",      # OK
+                 "game_single": "game/single.wav",
+                 "game_double": "game/double.wav",
+                 "game_triple": "game/triple.wav",
+                 "game_tetris": "game/tetris.wav",
+                 "game_t_spin": "game/t_spin.wav",
+                 "game_pause": "game/pause.wav",
+                 "game_gameover": "game/gameover.wav"}

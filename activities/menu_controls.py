@@ -8,8 +8,8 @@ from activities.activity import Activity
 
 class MenuControls(Activity): 
     
-    def __init__(self, window):
-        Activity.__init__(self, window)
+    def __init__(self, window, sound):
+        Activity.__init__(self, window, sound)
         
         self.need_to_redraw = True
     
@@ -21,5 +21,8 @@ class MenuControls(Activity):
     
     def event_key_pressed(self, key):
         change_activity = key in [K_RETURN, K_ESCAPE]
+        
+        if change_activity:
+            self._sound.play_sound_effect('menu_back')
         
         return change_activity

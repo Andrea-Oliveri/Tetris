@@ -24,7 +24,7 @@ class Gui():
         self._window = Window()
 
         # Store current activity.
-        self._current_activity = Menu(self._window)
+        self._current_activity = Menu(self._window, self._sound)
         
         
     def __del__(self):
@@ -61,7 +61,7 @@ class Gui():
                                 
                                 self._current_activity = Game(self._window, self._sound)
                             elif text_pressed == 'Controls':
-                                self._current_activity = MenuControls(self._window)
+                                self._current_activity = MenuControls(self._window, self._sound)
                             elif text_pressed == 'Exit':
                                 self._window.close()
                             else:
@@ -71,7 +71,7 @@ class Gui():
                         change_activity = output
                         
                         if change_activity:
-                            self._current_activity = Menu(self._window)
+                            self._current_activity = Menu(self._window, self._sound)
                             
                             # Disable Delayed Auto Shift.
                             pygame.key.set_repeat()
