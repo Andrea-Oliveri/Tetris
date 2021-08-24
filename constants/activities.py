@@ -30,3 +30,6 @@ FIXED_GOAL = 10
 
 # Constant defining the maximum level that can be reached.
 LEVEL_CAP = 15
+
+# constant defining how many frames the countdown is shown when starting or resuming a game.
+COUNTDOWN_FRAMES = 3 * REFRESH_RATE

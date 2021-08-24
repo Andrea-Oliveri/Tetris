@@ -10,6 +10,7 @@ from graphics.regions.queue_region import QueueRegion
 from graphics.regions.fps_region import FPSRegion
 from graphics.regions.level_region import LevelRegion
 from graphics.regions.score_region import ScoreRegion
+from graphics.regions.game_info_region import GameInfoRegion
 
 
 class Window:
@@ -61,10 +62,7 @@ class Window:
 
         whole_surface = utils.merge_surfaces_vertically([logo, *text_surfaces])
         
-        self._screen.fill(COLORS["background"])
-        self._screen.blit(whole_surface, ((self._screen.get_width()-whole_surface.get_width())/2,
-                                          (self._screen.get_height()-whole_surface.get_height())/2))        
-        pygame.display.update()
+        self._draw_whole_screen(whole_surface)
         
     
     def draw_menu_controls(self, controls_lines):
@@ -79,12 +77,7 @@ class Window:
             
         whole_surface = utils.merge_surfaces_in_table(keys_surfaces, text_surfaces)
         
-        self._screen.fill(COLORS["background"])
-        self._screen.blit(whole_surface, ((self._screen.get_width()-whole_surface.get_width())/2,
-                                          (self._screen.get_height()-whole_surface.get_height())/2))        
-        pygame.display.update()
-    
-   
+        self._draw_whole_screen(whole_surface)  
         
         
     def init_game(self):
@@ -94,7 +87,7 @@ class Window:
         self._fps_region   = FPSRegion()
         self._level_region = LevelRegion()
         self._score_region = ScoreRegion()
-        
+        self._game_info_region = GameInfoRegion()
         
         
     def end_game(self):
@@ -104,16 +97,18 @@ class Window:
         del self._fps_region
         del self._level_region
         del self._score_region
+        del self._game_info_region
 
 
     def update_game(self, current_grid, current_tetrimino, queue, held, score,
-                    level, goal, lines, fps, show_fps):
+                    level, goal, lines, fps, show_fps, game_state_text):
         """Implementation of the update method for the Window."""
         self._hold_region.update(held = held)
         self._grid_region.update(current_grid = current_grid, current_tetrimino = current_tetrimino)
         self._queue_region.update(queue = queue)
         self._level_region.update(level = level, goal = goal, lines = lines)
         self._score_region.update(score = score)
+        self._game_info_region.update(game_state_text = game_state_text)
         
         surfaces_right_column = [self._queue_region.surface, self._level_region.surface]
         if show_fps:
@@ -122,12 +117,16 @@ class Window:
 
         right_column = utils.merge_surfaces_vertically(surfaces_right_column, False)
         central_column = utils.merge_surfaces_vertically([self._grid_region.surface, self._score_region.surface])
+        left_column = utils.merge_surfaces_vertically([self._hold_region.surface, self._game_info_region.surface])
 
-        whole_surface = utils.merge_surfaces_horizontally([self._hold_region.surface, central_column, right_column])
+        whole_surface = utils.merge_surfaces_horizontally([left_column, central_column, right_column])
         
-        self._screen.fill(COLORS["background"])
-        self._screen.blit(whole_surface, ((self._screen.get_width()-whole_surface.get_width())/2,
-                                          (self._screen.get_height()-whole_surface.get_height())/2))        
-        pygame.display.update()
+        self._draw_whole_screen(whole_surface)
+        
     
+    def _draw_whole_screen(self, surface):
+        self._screen.fill(COLORS["background"])
+        self._screen.blit(surface, ((self._screen.get_width()-surface.get_width())/2,
+                                    (self._screen.get_height()-surface.get_height())/2))        
+        pygame.display.update()
    

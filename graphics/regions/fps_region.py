@@ -9,7 +9,7 @@ class FPSRegion(Region):
     """Class FPSRegion. Class representing the region of the window where the fps counter is (optionally) displayed."""
     
     def __init__(self):
-        """Overload of constructor for QueueRegion class."""
+        """Overload of constructor for FPSRegion class."""
         Region.__init__(self)
         self._text = utils.draw_text("FPS: ", FPS_FONT_SIZE)
     

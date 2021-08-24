@@ -33,7 +33,9 @@ class Menu(Activity):
             self._sound.play_sound_effect('menu_move')
         elif key == K_RETURN:
             text_pressed = MENU_TEXT_LINES[self.menu_line_selected]
-            self._sound.play_sound_effect('menu_select')
+            
+            if text_pressed != "Exit":
+                self._sound.play_sound_effect('menu_select')
         
         return change_activity, text_pressed
                     

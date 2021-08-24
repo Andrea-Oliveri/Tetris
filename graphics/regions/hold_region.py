@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from constants.graphics import HOLD_SQUARE_SIZE_PIXELS, HOLD_FONT_SIZE
+from constants.graphics import HOLD_SQUARE_SIZE_PIXELS, HOLD_FONT_SIZE, HOLD_SURFACE_HEIGHT
 from graphics.regions.region import Region
 from graphics import utils
 
@@ -23,6 +23,6 @@ class HoldRegion(Region):
     
         if held != None:
             piece = utils.draw_outside_tetrimino(held, HOLD_SQUARE_SIZE_PIXELS)
-            self._surface = utils.merge_surfaces_vertically([self._text, piece])
+            self._surface = utils.merge_surfaces_vertically([self._text, piece], total_height = HOLD_SURFACE_HEIGHT)
         else:
-            self._surface = self._text
+            self._surface = utils.merge_surfaces_vertically([self._text], total_height = HOLD_SURFACE_HEIGHT)

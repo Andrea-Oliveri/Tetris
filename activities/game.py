@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from pygame.locals import K_c, K_x, K_z, K_SPACE, K_LEFT, K_RIGHT, K_UP, K_DOWN, K_LSHIFT, K_RSHIFT, K_LCTRL, K_RCTRL, K_ESCAPE, K_RETURN, K_F1, K_F2
+from math import ceil
 
-from constants.activities import LOCK_DELAY, FIXED_GOAL, LEVEL_CAP
+from constants.activities import LOCK_DELAY, FIXED_GOAL, LEVEL_CAP, COUNTDOWN_FRAMES
+from constants.gui import REFRESH_RATE
 from activities.activity import Activity
 
 from grid import Grid
@@ -25,8 +27,8 @@ class Game(Activity):
         self._random = RandomBag()
         self._score_keeper = Score()
         
-        self._running = True
-        self._topped_out = False
+        self._state = "countdown"
+        self._countdown_timer = COUNTDOWN_FRAMES
         self._swap_allowed = True
         self._show_fps_counter = False
         self._keys_down = {}
@@ -53,8 +55,7 @@ class Game(Activity):
         current_piece, self._next_queue = self._random.next_pieces()
         self._current_tetrimino = PlayableTetrimino(current_piece, self._grid)      
         if self._current_tetrimino.blocked_out:
-            self._topped_out = True
-            self._running = False
+            self._state = "gameover"
             self._sound.play_sound_effect('game_gameover')
 
 
@@ -63,9 +64,6 @@ class Game(Activity):
         if possible, then checks the lock counter of the tetrimino and, if
         larger than LOCK_DELAY, locks it into place, updates score, goal,
         level and lines cleared and spawns new tetrimino."""
-        if not self._running:
-            return 
-        
         if self._keys_down.get(K_SPACE, False):
             n_lines_dropped, landed = self._current_tetrimino.move_down(self._grid, self._level, "hard")
             self._score_keeper.add_to_score("hard_drop", {"n_lines": n_lines_dropped})
@@ -125,8 +123,7 @@ class Game(Activity):
                 self._goal = 0
         
         if lock_out:
-            self._topped_out = True
-            self._running = False
+            self._state = "gameover"
             sound_effect = 'game_gameover'
         else:
             self._spawn_tetrimino()
@@ -134,6 +131,12 @@ class Game(Activity):
             
         self._sound.play_sound_effect(sound_effect)
 
+
+    def _tick_countdown(self):
+        self._countdown_timer -= 1
+        
+        if self._countdown_timer <= 0:
+            self._state = "running"
 
 
     def _swap_held_tetrimino(self):
@@ -154,13 +157,23 @@ class Game(Activity):
     
     
     def event_update_screen(self, fps):
-        self._fall_tetrimino()
+        game_state_text = ""
+        
+        if self._state == "running":
+            self._fall_tetrimino()
+        elif self._state == "countdown":
+            game_state_text = "Resuming in {}".format(ceil(self._countdown_timer / REFRESH_RATE))
+            self._tick_countdown()
+        elif self._state == "paused":
+            game_state_text = "Paused"
+            
         self._window.update_game(current_grid = self._grid,
                                  current_tetrimino = self._current_tetrimino,
                                  queue = self._next_queue, held = self._held_tetrimino,
                                  score = self._score_keeper.score, level = self._level,
                                  goal = self._goal, lines = self._lines_cleared,
-                                 fps = fps, show_fps = self._show_fps_counter)
+                                 fps = fps, show_fps = self._show_fps_counter,
+                                 game_state_text = game_state_text)
     
     
     def event_key_pressed(self, key):
@@ -170,7 +183,7 @@ class Game(Activity):
         key_held = self._keys_down.get(key, False)
         self._keys_down[key] = True
         
-        if self._running:
+        if self._state == "running":
             rotation_success = False
             move_success = False
             
@@ -193,18 +206,22 @@ class Game(Activity):
                 self._sound.play_sound_effect('game_move')
         
         
-        if key == K_ESCAPE or key == K_F1:
-            # Only allow changing running attribute to True if not topped out.
-            prev_running = self._running
-            self._running = not self._running and not self._topped_out
-            
-            if prev_running and not self._running:
+        if key == K_ESCAPE or key == K_F1:            
+            # If game is running or counting down to resume, we allow pausing it.
+            # If the game is paused, we start counting down to resume it.
+            # If game is finished, we don't change the state.
+            if self._state == "running":
+                self._state = "paused"
                 self._sound.play_sound_effect('game_pause')
+            elif self._state == "paused":
+                self._state = "countdown"
+                self._sound.play_sound_effect('game_pause')
+                self._countdown_timer = COUNTDOWN_FRAMES
             
         elif key == K_F2:
             self._show_fps_counter = not self._show_fps_counter
         
-        change_activity = self._topped_out and key in [K_RETURN, K_ESCAPE]
+        change_activity = self._state == "gameover" and key in [K_RETURN, K_ESCAPE]
         
         if change_activity:
             self._sound.play_sound_effect('menu_back')
@@ -215,3 +232,5 @@ class Game(Activity):
     def event_key_released(self, key):
         """Reacts to the user releasing a key."""
         self._keys_down[key] = False
+
+

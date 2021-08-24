@@ -13,11 +13,11 @@ MENU_MUSIC = ["Menu.mp3"]
 SOUND_EFFECTS = {"menu_move": "menu/move.wav",                # OK
                  "menu_select": "menu/select.wav",            # OK
                  "menu_back": "menu/back.wav",                # OK
-                 "game_count": "game/count.wav",
+                 "game_count": "game/count.wav",              # NOT IMPLEMENTED
                  "game_move": "game/move.wav",                # OK
                  "game_rotate": "game/rotate.wav",            # OK
                  "game_hold": "game/hold.wav",                # OK
-                 "game_alert": "game/alert.wav",              # NOT IMPLEMENTED?
+                 "game_alert": "game/alert.wav",              
                  "game_landing": "game/landing.wav",          
                  "game_lock": "game/lock.wav",                # OK
                  "game_soft_drop": "game/soft_drop.wav",      # OK

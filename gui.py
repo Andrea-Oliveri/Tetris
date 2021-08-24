@@ -33,9 +33,11 @@ class Gui():
     
     def run(self):
         
+        pygame.event.set_allowed([QUIT, KEYDOWN, KEYUP])
+        
         # Variable used to limit the fps at which screen is being updated.
         fps_clock = pygame.time.Clock()
-          
+        
         while not self._window.closed:
             fps_clock.tick(REFRESH_RATE)
             self._current_activity.event_update_screen(fps_clock.get_fps())            
