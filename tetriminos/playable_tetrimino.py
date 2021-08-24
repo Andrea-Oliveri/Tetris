@@ -111,21 +111,28 @@ class PlayableTetrimino(Tetrimino):
             elif self._rotation == "DEG_270":
                 new_rotation = "DEG_180"
         
+        rotation_success = False
+        
         if self._letter == "O":
             self._rotation = new_rotation
             self._lock_counter = 0
-            self._last_movement_is_rotation = True 
-            return
+            self._last_movement_is_rotation = True
+            rotation_success = True
+        
+        else:
+            for delta_position in ROTATION_TESTS[self._letter][(self._rotation, new_rotation)]:
+                new_position = [self._position[0] + delta_position[0], self._position[1] + delta_position[1]]
+                if not self._collision(new_position, new_rotation, current_grid):
+                    self._position = new_position
+                    self._rotation = new_rotation
+                    self._ghost_position = self._compute_ghost_position(current_grid)
+                    self._lock_counter = 0
+                    self._last_movement_is_rotation = True 
+                    rotation_success = True
+                    break
+                
+        return rotation_success
     
-        for delta_position in ROTATION_TESTS[self._letter][(self._rotation, new_rotation)]:
-            new_position = [self._position[0] + delta_position[0], self._position[1] + delta_position[1]]
-            if not self._collision(new_position, new_rotation, current_grid):
-                self._position = new_position
-                self._rotation = new_rotation
-                self._ghost_position = self._compute_ghost_position(current_grid)
-                self._lock_counter = 0
-                self._last_movement_is_rotation = True 
-                break
     
     def move_sideways(self, direction, current_grid):
         """Moves the tetrimino either "left" or "right" if collision allow it."""
@@ -135,12 +142,18 @@ class PlayableTetrimino(Tetrimino):
             new_position[1] -= 1
         elif direction == "right":
             new_position[1] += 1
+            
+        move_success = False
         
         if not self._collision(new_position, self._rotation, current_grid):
             self._position = new_position
             self._ghost_position = self._compute_ghost_position(current_grid)
             self._lock_counter = 0
             self._last_movement_is_rotation = False
+            move_success = True
+            
+        return move_success
+    
     
     def move_down(self, current_grid, level, drop_type="normal"):
         """Moves the tetrimino down if collisions allow it.
@@ -180,7 +193,7 @@ class PlayableTetrimino(Tetrimino):
                 
             self._lock_counter = 0
         
-        return old_line_position - self.position[0]
+        return old_line_position - self.position[0], False
     
     def detect_3_corner_T_spin(self, current_grid):
         """Returns True if the tetrimino is a T, last movement was rotation and

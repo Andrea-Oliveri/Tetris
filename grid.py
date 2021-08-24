@@ -23,11 +23,11 @@ class Grid:
         
         return self._grid[line][col] == " "
     
-    def lock_down(self, tetrimino, level, score_keeper):
+    def lock_down(self, tetrimino):
         """Locks the tetrimino in the grid into place.
-        Calls methods of score_keeper to add score obtained with this move, returns
-        the cleared number of lines and True if the tetrimino locked down outside 
-        the visible area (Lock Out), False otherwise."""       
+        Returns the cleared number of lines, if the tetrimino locked down outside 
+        the visible area (Lock Out), if the grid is empty as a result of the line
+        clears and if the player did a T-spin."""       
         lock_out = True
         
         for line in range(tetrimino.MAPS_SIZE["height"]):
@@ -42,23 +42,11 @@ class Grid:
         reward_tspin = tetrimino.detect_3_corner_T_spin(self)
         lines_cleared = self._clear_lines()
         
-        if lines_cleared:
-            score_lines_cleared_actions = {(1, False): "single", (2, False): "double", 
-                                           (3, False): "triple", (4, False): "tetris",
-                                           (1, True): "tspin_single", (2, True): "tspin_double", 
-                                           (3, True): "tspin_triple", (4, True): "tspin_tetris"}
-            
-            action = score_lines_cleared_actions[lines_cleared, reward_tspin]
-                        
-            score_keeper.add_to_score(action, {"level": level})
+        # Only compute all_empty if there were line clears as otherwise it 
+        # is surely False.
+        all_empty = lines_cleared and self._all_empty()
         
-            if self._all_empty():
-                score_keeper.add_perfect_bonus_to_score(lines_cleared, level)
-                
-        elif reward_tspin:
-            score_keeper.add_to_score("tspin_no_lines", {"level": level})
-        
-        return lines_cleared, lock_out
+        return lines_cleared, lock_out, all_empty, reward_tspin
     
     
     def _clear_lines(self):

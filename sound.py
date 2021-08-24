@@ -54,5 +54,11 @@ class SoundEngine:
         pygame.mixer.music.play(-1)
         
     
-    def play_sound_effect(self, effect):
+    def play_sound_effect(self, effect):        
+        if effect == "game_gameover":
+            pygame.mixer.music.stop()
+           
         self._effects_library[effect].play()
+           
+        
+        

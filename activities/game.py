@@ -55,6 +55,7 @@ class Game(Activity):
         if self._current_tetrimino.blocked_out:
             self._topped_out = True
             self._running = False
+            self._sound.play_sound_effect('game_gameover')
 
 
     def _fall_tetrimino(self):
@@ -66,41 +67,75 @@ class Game(Activity):
             return 
         
         if self._keys_down.get(K_SPACE, False):
-            n_lines_dropped = self._current_tetrimino.move_down(self._grid, self._level, "hard")
+            n_lines_dropped, landed = self._current_tetrimino.move_down(self._grid, self._level, "hard")
             self._score_keeper.add_to_score("hard_drop", {"n_lines": n_lines_dropped})
             
             if n_lines_dropped:
                 self._sound.play_sound_effect('game_hard_drop')
             
         elif self._keys_down.get(K_DOWN, False):
-            n_lines_dropped = self._current_tetrimino.move_down(self._grid, self._level, "soft")
+            n_lines_dropped, landed = self._current_tetrimino.move_down(self._grid, self._level, "soft")
             self._score_keeper.add_to_score("soft_drop", {"n_lines": n_lines_dropped})
             
             if n_lines_dropped:
-                self._sound.play_sound_effect('game_soft_drop')                
+                self._sound.play_sound_effect('game_soft_drop')
             
         else:
-            self._current_tetrimino.move_down(self._grid, self._level, "normal")        
+            _, landed = self._current_tetrimino.move_down(self._grid, self._level, "normal")        
                 
-        if self._current_tetrimino.lock_counter >= LOCK_DELAY:
-            lines_cleared, lock_out = self._grid.lock_down(self._current_tetrimino, self._level, self._score_keeper)
-            self._lines_cleared += lines_cleared
-            self._goal -= lines_cleared
-            if self._goal <= 0:
-                if self._level < LEVEL_CAP:
-                    self._level += 1
-                    self._goal = FIXED_GOAL
-                else:
-                    self._goal = 0
+        if landed:
+            self._sound.play_sound_effect('game_landing')
             
-            if lock_out:
-                self._topped_out = True
-                self._running = False
-            else:
-                self._spawn_tetrimino()
-                self._swap_allowed = True
+        if self._current_tetrimino.lock_counter >= LOCK_DELAY:
+            self._lock_down()
 
+
+    def _lock_down(self):
+        lines_cleared, lock_out, all_empty, reward_tspin = self._grid.lock_down(self._current_tetrimino)
+        
+        sound_effect = 'game_lock'
+        
+        if lines_cleared:
+            score_lines_cleared_actions = {(1, False): "single", (2, False): "double", 
+                                           (3, False): "triple", (4, False): "tetris",
+                                           (1, True): "tspin_single", (2, True): "tspin_double", 
+                                           (3, True): "tspin_triple", (4, True): "tspin_tetris"}
+                        
+            action = score_lines_cleared_actions[lines_cleared, reward_tspin]            
+            self._score_keeper.add_to_score(action, {"level": self._level})
+            
+            sound_effects_cleared_actions = {1: "game_single", 2: "game_double", 3: "game_triple", 4: "game_tetris"}
+            sound_effect = sound_effects_cleared_actions[lines_cleared]
+                    
+            if all_empty:
+                self._score_keeper.add_perfect_bonus_to_score(lines_cleared, self._level)
+                sound_effect = 'game_perfect'
+                
+        elif reward_tspin:
+            self._score_keeper.add_to_score("tspin_no_lines", {"level": self._level})
     
+        
+        self._lines_cleared += lines_cleared
+        self._goal -= lines_cleared
+        if self._goal <= 0:
+            if self._level < LEVEL_CAP:
+                self._level += 1
+                self._goal = FIXED_GOAL
+            else:
+                self._goal = 0
+        
+        if lock_out:
+            self._topped_out = True
+            self._running = False
+            sound_effect = 'game_gameover'
+        else:
+            self._spawn_tetrimino()
+            self._swap_allowed = True
+            
+        self._sound.play_sound_effect(sound_effect)
+
+
+
     def _swap_held_tetrimino(self):
         """Performs the swap beween the current tetrimino and the held tetrimino,
         if it is currently allowed."""             
@@ -136,21 +171,36 @@ class Game(Activity):
         self._keys_down[key] = True
         
         if self._running:
+            rotation_success = False
+            move_success = False
+            
             if key == K_LEFT:
-                self._current_tetrimino.move_sideways("left", self._grid)
+                move_success = self._current_tetrimino.move_sideways("left", self._grid)
             elif key == K_RIGHT:
-                self._current_tetrimino.move_sideways("right", self._grid)
+                move_success = self._current_tetrimino.move_sideways("right", self._grid)
             elif not key_held:
                 if key in (K_c, K_LSHIFT, K_RSHIFT):
                     self._swap_held_tetrimino()
                 elif key in (K_x, K_UP):
-                    self._current_tetrimino.rotate("clockwise", self._grid)
+                    rotation_success = self._current_tetrimino.rotate("clockwise", self._grid)
                 elif key in (K_z, K_LCTRL, K_RCTRL):
-                    self._current_tetrimino.rotate("anticlockwise", self._grid)
+                    rotation_success = self._current_tetrimino.rotate("anticlockwise", self._grid)
+                        
+            if rotation_success:
+                self._sound.play_sound_effect('game_rotate')
+                
+            if move_success:
+                self._sound.play_sound_effect('game_move')
+        
         
         if key == K_ESCAPE or key == K_F1:
             # Only allow changing running attribute to True if not topped out.
+            prev_running = self._running
             self._running = not self._running and not self._topped_out
+            
+            if prev_running and not self._running:
+                self._sound.play_sound_effect('game_pause')
+            
         elif key == K_F2:
             self._show_fps_counter = not self._show_fps_counter
         
