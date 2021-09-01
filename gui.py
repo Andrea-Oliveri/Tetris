@@ -28,6 +28,9 @@ class Gui():
         
         
     def __del__(self):
+        del self._current_activity
+        del self._sound
+        del self._window
         pygame.quit()
         
     

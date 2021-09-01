@@ -45,8 +45,9 @@ class Game(Activity):
         
     def __del__(self):
         """Destructor for the class Game."""
-        self._window.end_game()
         self._sound.use_menu_music()
+        self._window.end_game()
+        
     
     def _spawn_tetrimino(self):
         """Gets the next tetrimino to be spawned from the random generator, and
@@ -70,6 +71,9 @@ class Game(Activity):
             
             if n_lines_dropped:
                 self._sound.play_sound_effect('game_hard_drop')
+                
+                # Remove the landing aound effect as the hard drop one covers it.
+                landed = False
             
         elif self._keys_down.get(K_DOWN, False):
             n_lines_dropped, landed = self._current_tetrimino.move_down(self._grid, self._level, "soft")
@@ -186,11 +190,12 @@ class Game(Activity):
         if self._state == "running":
             rotation_success = False
             move_success = False
+            hit_wall = False
             
             if key == K_LEFT:
-                move_success = self._current_tetrimino.move_sideways("left", self._grid)
+                move_success, hit_wall = self._current_tetrimino.move_sideways("left", self._grid)
             elif key == K_RIGHT:
-                move_success = self._current_tetrimino.move_sideways("right", self._grid)
+                move_success, hit_wall = self._current_tetrimino.move_sideways("right", self._grid)
             elif not key_held:
                 if key in (K_c, K_LSHIFT, K_RSHIFT):
                     self._swap_held_tetrimino()
@@ -204,6 +209,9 @@ class Game(Activity):
                 
             if move_success:
                 self._sound.play_sound_effect('game_move')
+                
+            if hit_wall:
+                self._sound.play_sound_effect('game_alert')
         
         
         if key == K_ESCAPE or key == K_F1:            

@@ -26,6 +26,8 @@ class PlayableTetrimino(Tetrimino):
         self._ghost_position = self._compute_ghost_position(current_grid)
         self._lock_counter = 0
         self._last_movement_is_rotation = False
+        self._is_touching_wall = False
+        self._is_touching_floor = False
         
     def _get_lock_counter(self):
         """Special function that allows to get the attribute _lock_counter from the exterior."""
@@ -63,10 +65,19 @@ class PlayableTetrimino(Tetrimino):
                         return True                
         return False
     
-    def _touching(self, current_grid):
-        """Returns True if the tetrimino is touching the a block of the grid which
-        would impede his movement down, False otherwise."""
-        return self._collision([self.position[0]-1, self.position[1]], self._rotation, current_grid)
+    def _touching(self, current_grid, side = "bottom"):
+        """Returns True if the tetrimino is touching a block of the grid which
+        would impede its movement down, right or left and False otherwise."""
+        if side == "bottom":
+            new_position = [self.position[0]-1, self.position[1]]
+        elif side == "right":
+            new_position = [self.position[0], self.position[1]+1]
+        elif side == "left":
+            new_position = [self.position[0], self.position[1]-1]
+        else:
+            raise ValueError
+            
+        return self._collision(new_position, self._rotation, current_grid)
         
     def _compute_ghost_position(self, current_grid):
         """Returns the position that the ghost piece can take."""
@@ -152,7 +163,11 @@ class PlayableTetrimino(Tetrimino):
             self._last_movement_is_rotation = False
             move_success = True
             
-        return move_success
+        touching = self._touching(current_grid, "left") or self._touching(current_grid, "right")
+        touching_now_first_time = touching and not self._is_touching_wall
+        self._is_touching_wall = touching
+            
+        return move_success, touching_now_first_time
     
     
     def move_down(self, current_grid, level, drop_type="normal"):
@@ -193,7 +208,11 @@ class PlayableTetrimino(Tetrimino):
                 
             self._lock_counter = 0
         
-        return old_line_position - self.position[0], False
+        touching = self._touching(current_grid)
+        touching_now_first_time = touching and not self._is_touching_floor
+        self._is_touching_floor = touching
+        
+        return old_line_position - self.position[0], touching_now_first_time
     
     def detect_3_corner_T_spin(self, current_grid):
         """Returns True if the tetrimino is a T, last movement was rotation and

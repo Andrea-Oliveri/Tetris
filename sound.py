@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import pygame
-import os
 
 from constants.sound import MUSICS_DIRECTORY, EFFECTS_DIRECTORY, GAME_MUSIC, MENU_MUSIC, SOUND_EFFECTS
 
