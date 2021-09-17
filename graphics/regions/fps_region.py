@@ -6,7 +6,8 @@ from graphics import utils
 
 
 class FPSRegion(Region):
-    """Class FPSRegion. Class representing the region of the window where the fps counter is (optionally) displayed."""
+    """Class FPSRegion. Class representing the region of the game screen where the
+    fps counter is (optionally) displayed."""
     
     def __init__(self):
         """Overload of constructor for FPSRegion class."""

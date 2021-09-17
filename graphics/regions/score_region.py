@@ -6,7 +6,7 @@ from graphics import utils
 
 
 class ScoreRegion(Region):
-    """Class ScoreRegion. Class representing the region of the window where the 
+    """Class ScoreRegion. Class representing the region of the game screen where the
     score is displayed."""
     
     def update(self, **kwargs):

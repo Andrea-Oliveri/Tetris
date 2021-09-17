@@ -38,6 +38,7 @@ MENU_TEXT_FONT_SIZE = 30
 MENU_CONTROLS_TEXT_FONT_SIZE = 20
 
 # Constant defining where the image are stored.
-IMAGE_DIRECTORY = "./assets/images/"
+IMAGE_DIRECTORY = "./assets/images"
 LOGO_IMAGE_NAME = "logo.png"
+ICON_IMAGE_NAME = "icon.ico"
 CURSOR_IMAGE_NAME = "cursor.png"

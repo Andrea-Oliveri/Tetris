@@ -7,7 +7,8 @@ from graphics import utils
 
 
 class QueueRegion(Region):
-    """Class QueueRegion. Class representing the region of the window where the next pieces are displayed."""
+    """Class QueueRegion. Class representing the region of the game screen where
+    the next pieces are displayed."""
         
     def __init__(self):
         """Overload of constructor for QueueRegion class."""

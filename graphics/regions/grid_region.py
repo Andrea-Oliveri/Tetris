@@ -8,7 +8,7 @@ from graphics.regions.region import Region
 
 
 class GridRegion(Region):
-    """Class GridRegion. Class representing the region of the window where the grid is displayed."""
+    """Class GridRegion. Class representing the region of the game screen where the grid is displayed."""
         
     def __init__(self):
         """Overload of constructor for GridRegion class."""

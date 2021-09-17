@@ -6,7 +6,7 @@ from graphics import utils
 
 
 class LevelRegion(Region):
-    """Class LevelRegion. Class representing the region of the window where the 
+    """Class LevelRegion. Class representing the region of the game screen where the 
     level and goal are displayed."""
     
     def update(self, **kwargs):

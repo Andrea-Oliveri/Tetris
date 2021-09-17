@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 
 class Region(ABC):
-    """Class Region. Class representing a region of the whole graphical window."""
+    """Class Region. Class representing a region of the game screen."""
     
     def __init__(self):
         """Constructor for the class Region."""
@@ -21,7 +21,7 @@ class Region(ABC):
             raise TypeError("{}.update() takes exactly {} kwarg: {}".format(self.__class__.__name__, len(keys_list), ", ".join(keys_list)))
     
     def _get_surface(self):
-        """Special function that allows to get the attribute _surface from the exterior."""
+        """Getter for the attribute _surface."""
         return self._surface
     
     """Definition of a properties for parameter _surface. This parameter can

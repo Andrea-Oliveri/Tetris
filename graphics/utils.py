@@ -32,13 +32,13 @@ def draw_outside_tetrimino(tetrimino, square_size_pixels):
 
 def draw_text(message, font_size, color = COLORS["text"]):
     """Function that returns a pygame.Surface containing the rendered text 
-    with message and size passed as parameters."""
+    with message, size and color passed as parameters."""
     return pygame.font.SysFont(FONT, font_size).render(message, True, color, COLORS["background"])
                 
 
 def merge_surfaces_horizontally(surfaces, center=False):
     """Returns a surfaces in which all surfaces passed as parameter are stacked horizontally
-    and aligned on top."""
+    and either top-aligned or center-aligned depending on the center parameter"""
 
     merged_surface_size = {"width": sum([surface.get_width() for surface in surfaces])+(len(surfaces)-1)*ELEMENTS_MARGIN_PIXELS,
                            "height": max([surface.get_height() for surface in surfaces])}

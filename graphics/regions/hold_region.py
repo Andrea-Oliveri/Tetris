@@ -6,7 +6,8 @@ from graphics import utils
 
 
 class HoldRegion(Region):
-    """Class HoldRegion. Class representing the region of the window where the held piece is displayed."""
+    """Class HoldRegion. Class representing the region of the game screen where the 
+    held piece is displayed."""
         
     def __init__(self):
         """Overload of constructor for HoldRegion class."""
@@ -21,8 +22,9 @@ class HoldRegion(Region):
             
         held = kwargs["held"]
     
+        surfaces = [self._text]
         if held != None:
             piece = utils.draw_outside_tetrimino(held, HOLD_SQUARE_SIZE_PIXELS)
-            self._surface = utils.merge_surfaces_vertically([self._text, piece], total_height = HOLD_SURFACE_HEIGHT)
-        else:
-            self._surface = utils.merge_surfaces_vertically([self._text], total_height = HOLD_SURFACE_HEIGHT)
+            surfaces.append(piece)
+            
+        self._surface = utils.merge_surfaces_vertically(surfaces, total_height = HOLD_SURFACE_HEIGHT)

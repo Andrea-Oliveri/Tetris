@@ -2,3 +2,5 @@
 .coverage
 htmlcov/
 times.txt
+build/
+
