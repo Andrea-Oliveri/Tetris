@@ -14,8 +14,9 @@ from score import Score
 
 
 class Game(Activity):
-    """Class Game. Class representing the game engine."""
-
+    """Class MenuControls. Implements screen update, reaction to key presses
+    and releases and game engine when the program is showing the game."""
+    
     def __init__(self, window, sound):
         """Constructor for the class Game."""
         Activity.__init__(self, window, sound)
@@ -51,8 +52,8 @@ class Game(Activity):
     
     def _spawn_tetrimino(self):
         """Gets the next tetrimino to be spawned from the random generator, and
-        attenpts spawning it. If collisions allow it to spawn there, returns True, 
-        otherwise returns False (block out)."""
+        attempts spawning it. If collisions do not allow it to spawn there (block out), 
+        changes the game state to gameover and plays a sound effect."""
         current_piece, self._next_queue = self._random.next_pieces()
         self._current_tetrimino = PlayableTetrimino(current_piece, self._grid)      
         if self._current_tetrimino.blocked_out:
@@ -61,10 +62,11 @@ class Game(Activity):
 
 
     def _fall_tetrimino(self):
-        """If the game is running, calls a method so that tetrimino moves down
-        if possible, then checks the lock counter of the tetrimino and, if
-        larger than LOCK_DELAY, locks it into place, updates score, goal,
-        level and lines cleared and spawns new tetrimino."""
+        """Method called once per screen update when the game state is running.
+        This method makes the current tetromino fall by the right amount if possible
+        (accounting for level, soft drops, hard drops, ...), and calls method to 
+        lock it into place if it stayed on the ground long enough. Also plays sound 
+        effects on hard drops, soft drops and landing."""
         if self._keys_down.get(K_SPACE, False):
             n_lines_dropped, landed = self._current_tetrimino.move_down(self._grid, self._level, "hard")
             self._score_keeper.add_to_score("hard_drop", {"n_lines": n_lines_dropped})
@@ -93,6 +95,11 @@ class Game(Activity):
 
 
     def _lock_down(self):
+        """Method called when the current tetromino stayed on the ground longer than
+        its lock delay. Locks it into the current grid, and updates score, goal, level
+        and lines cleared. Also spawns a new tetrimino and plays a sound effect. If
+        lock out occurred, updates game state to gameover and plays corresponding sound
+        effect."""
         lines_cleared, lock_out, all_empty, reward_tspin = self._grid.lock_down(self._current_tetrimino)
         
         sound_effect = 'game_lock'
@@ -137,6 +144,9 @@ class Game(Activity):
 
 
     def _tick_countdown(self):
+        """Method called once per frame when counting down from paused state to
+        running state. Decreases the remaining countdown timer, and if the 
+        timer elapsed, it changes the game state to running."""
         self._countdown_timer -= 1
         
         if self._countdown_timer <= 0:
@@ -161,6 +171,9 @@ class Game(Activity):
     
     
     def event_update_screen(self, fps):
+        """Override of method from Activity class, drawing the controls menu
+        on the screen. This method updates the game state, and then the graphics
+        on the screen."""
         game_state_text = ""
         
         if self._state == "running":
@@ -181,9 +194,11 @@ class Game(Activity):
     
     
     def event_key_pressed(self, key):
-        """Reacts to key being pressed, except if it is being held (with the
-        only exception of right and left arrow) and, depending on the key,
-        if the game is paused. Updates self._keys_down to say key is being pressed."""
+        """Override of method from Activity class, reacting to key being pressed.
+        Keeps track of which keys are being held (as key down events are repeated
+        with a set rate when in game mode) and ignores key down events of keys that
+        are being held except for right and left arrows. All other keys will only
+        trigger one change in the game until they are released."""
         key_held = self._keys_down.get(key, False)
         self._keys_down[key] = True
         
@@ -238,7 +253,7 @@ class Game(Activity):
                 
         
     def event_key_released(self, key):
-        """Reacts to the user releasing a key."""
+        """Override of method from Activity class, reacting to key release."""
         self._keys_down[key] = False
 
 

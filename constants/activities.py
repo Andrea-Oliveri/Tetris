@@ -15,6 +15,7 @@ MENU_CONTROLS_TEXT_LINES = {'Move tetrimino to the left': ('key_left.png', ),
                             'Hard drop': ('key_space.png', ),
                             'Swap current tetrimino with held one': ('key_c.png', 'key_shift_left.png', 'key_shift_right.png'),
                             'Change music track': ('key_r.png', ),
+                            'Mute / Unmute': ('key_m.png', ),
                             'Pause / Resume': ('key_esc.png', 'key_f1.png', ),
                             'Show / Hide FPS counter': ('key_f2.png', )}
 
