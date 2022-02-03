@@ -65,19 +65,19 @@ Here are the Tetris Guidelines (as of 2009) collected from [this](https://tetris
 | Image | Meaning |
 |:-----:|:--------|
 |  🟢    | Currently implemented |
-|  🔴️  | Pending implementation |
-|  ⚫️  | Not going to be implemented |
+|  🟡  | Pending implementation |
+|  🔴️  | Not going to be implemented |
 
 
 | Guideline | Status |
 |:----- |:-------:|
 | Playfield is 10×40, where rows above 20 are hidden or obstructed by the field frame to trick the player into thinking it's 10×20 | 🟢 |
-| If hardware permits it, a few pixels of row 21 will be visible | ⚫️ |
+| If hardware permits it, a few pixels of row 21 will be visible | 🔴️ |
 | Tetrimino colors are as follows: <ul><li>Cian <i>I</i></li><li>Yellow <i>O</i></li><li>Purple <i>T</i></li><li>Green <i>S</i></li><li>Red <i>Z</i></li><li>Blue <i>J</i></li><li>Orange <i>L</i></li></ul> | 🟢 |
 | Tetrimino start locations: <ul><li>The I and O spawn in the middle columns</li><li>The rest spawn in the left-middle columns</li><li>The tetriminoes spawn horizontally with J, L and T spawning flat-side first</li><li>Spawn above playfield, row 21 for I, and 21/22 for all other tetriminoes</li><li>Immediately drop one space if no existing Block is in its path</li></ul> | 🟢 |
 | Initial rotation and movement: <ul><li>Super Rotation System/Standard Rotation System (SRS) specifies tetrimino rotation</li></ul> | 🟢 |
 | Standard mappings for computer keyboards: <ul><li>Up arrow and X are to rotate 90° clockwise</li><li>Space to hard drop</li><li>Shift and C are to hold</li><li>Ctrl and Z are to rotate 90° counterclockwise</li><li>Esc and F1 are to pause</li><li>Up, Down, Left, Right arrows perform locking hard drop, non-locking soft drop, left shift, and right shift respectively</li></ul> | 🟢 |
-| Number pad controls | ⚫️ |
+| Number pad controls | 🔴️ |
 | 7-bag Random Generator | 🟢 |
 | Hold piece: The player can press a button to send the falling tetrimino to the hold box, and any tetrimino that had been in the hold box moves to the top of the screen and begins falling. Hold cannot be used again until after the piece locks down | 🟢 |
 | Must have sound effects on by default, on rotation, movement, landing on surface, touching a wall, locking, line clear and game over | 🟢 |
@@ -92,10 +92,10 @@ Here are the Tetris Guidelines (as of 2009) collected from [this](https://tetris
 | The player tops out when a piece is spawned overlapping at least one block (block out), or a piece locks completely above the visible portion of the playfield (lock out) | 🟢 |
 | Must have 1 to 6 next pieces | 🟢 |
 | Recognition and rewarding of T-spin moves | 🟢 |
-| Recognition and rewarding of Mini T-spin moves | ⚫️ |
-| Rewarding of Back to Back chains | ⚫️ |
-| Multiplayer, Arcade, Marathon, Sprint, Ultra variation | ⚫️ |
+| Recognition and rewarding of Mini T-spin moves | 🔴️ |
+| Rewarding of Back to Back chains | 🔴️ |
+| Multiplayer, Arcade, Marathon, Sprint, Ultra variation | 🔴️ |
 | Speed curve must be the same as Tetris Worlds | 🟢 |
 | Game must use scoring system described [here](https://tetris.fandom.com/wiki/Scoring#Guideline_scoring_system) | 🟢 |
 | Game must count down from 3 after you press start, and after you resume a paused game | 🟢 |
-| Game must display a notice when the game starts | ⚫️ |
+| Game must display a notice when the game starts | 🔴️ |
