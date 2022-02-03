@@ -1,11 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-
 block_cipher = None
 
-
 a = Analysis(['tetris.py'],
-             pathex=['D:\\Personal Programming\\Tetris'],
+             pathex=['.'],
              binaries=[],
              datas=[('assets', 'assets')],
              hiddenimports=[],
@@ -38,4 +36,4 @@ exe = EXE(pyz,
           target_arch=None,
           codesign_identity=None,
           entitlements_file=None,
-          icon="D:\\Personal Programming\\Tetris\\assets\\images\\icon.ico" )
+          icon="assets/images/icon.ico" )

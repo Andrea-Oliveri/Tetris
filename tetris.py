@@ -8,7 +8,7 @@ if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
 
 
-from gui import Gui
+from src.gui import Gui
 
 # Run application.
 app_gui = Gui()

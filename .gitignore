@@ -3,4 +3,4 @@
 htmlcov/
 times.txt
 build/
-
+*.exe
